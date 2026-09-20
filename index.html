@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Premium Barbershop</title>
+    <meta name="description" content="Precision cuts. Premium grooming. Your style, perfected.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-charcoal text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-[#0B0B0B]/90 backdrop-blur-sm border-b border-charcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="playfair text-2xl font-bold tracking-widest text-white uppercase" id="nav-brand">THE BARBER</a>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">Home</a>
+                    <a href="#services" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">Services</a>
+                    <a href="#barbers" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">Barbers</a>
+                    <a href="#about" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">About</a>
+                    <a href="#contact" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">Contact</a>
+                    <a href="booking.html" class="btn-primary text-sm">BOOK APPOINTMENT</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#0B0B0B] border-b border-charcoal">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 text-base font-medium text-white hover:text-gold">Home</a>
+                <a href="#services" class="block px-3 py-2 text-base font-medium text-white hover:text-gold">Services</a>
+                <a href="#barbers" class="block px-3 py-2 text-base font-medium text-white hover:text-gold">Barbers</a>
+                <a href="#about" class="block px-3 py-2 text-base font-medium text-white hover:text-gold">About</a>
+                <a href="#contact" class="block px-3 py-2 text-base font-medium text-white hover:text-gold">Contact</a>
+                <a href="booking.html" class="block px-3 py-2 mt-4 text-center btn-primary">BOOK APPOINTMENT</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <!-- Uses a high-quality placeholder image for luxury vibe -->
+            <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=2074&ixlib=rb-4.0.3" alt="Barbershop" class="w-full h-full object-cover opacity-40">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0B0B0B] via-transparent to-[#0B0B0B]"></div>
+        </div>
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto mt-16">
+            <h1 class="playfair text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight">LOOK SHARP.<br><span class="text-gold">FEEL CONFIDENT.</span></h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light tracking-wide">Precision cuts. Premium grooming. Your style, perfected.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="booking.html" class="btn-primary text-lg px-8 py-4">BOOK AN APPOINTMENT</a>
+                <a href="services.html" class="btn-outline text-lg px-8 py-4">VIEW SERVICES</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-[#0B0B0B]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-gold text-sm font-semibold tracking-widest uppercase mb-3">The Experience</h2>
+                    <h3 class="playfair text-4xl md:text-5xl font-bold mb-6">Craftsmanship Meets Luxury</h3>
+                    <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                        Established with a commitment to excellence, our barbershop provides more than just a haircut. We offer a tailored grooming experience designed for the modern gentleman who appreciates the finer details.
+                    </p>
+                    <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                        From precision fading to traditional hot towel shaves, our master barbers utilize premium products and time-honored techniques in an atmosphere of refined comfort.
+                    </p>
+                    <a href="barbers.html" class="text-gold hover:text-white font-medium flex items-center gap-2 transition-colors">
+                        Meet Our Barbers <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-0 border-2 border-gold transform translate-x-4 translate-y-4 rounded-lg"></div>
+                    <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&q=80&w=1000" alt="Barber tools" class="relative z-10 w-full rounded-lg shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-[#111111]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Services</h2>
+            <h3 class="playfair text-4xl font-bold mb-16">Premium Grooming</h3>
+            
+            <div id="services-loading" class="text-gray-400 py-10">Loading services...</div>
+            <div id="services-error" class="hidden text-center py-20 text-red-500">
+                <p>Unable to load services. Please try again later.</p>
+            </div>
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Barbers Section -->
+    <section id="barbers" class="py-24 bg-[#0B0B0B]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-gold text-sm font-semibold tracking-widest uppercase mb-3">Our Team</h2>
+            <h3 class="playfair text-4xl font-bold mb-16">Master Barbers</h3>
+            
+            <div id="barbers-loading" class="text-gray-400 py-10">Loading barbers...</div>
+            <div id="barbers-error" class="hidden text-center py-20 text-red-500">
+                <p>Unable to load barbers. Please try again later.</p>
+            </div>
+            <div id="barbers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 hidden">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Info -->
+    <section id="contact" class="py-24 bg-[#0B0B0B]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 text-center lg:text-left">
+                <div>
+                    <div class="w-12 h-12 bg-[#151515] rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6 border border-charcoal text-gold">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Location</h4>
+                    <p id="contact-address" class="text-gray-400">Loading...</p>
+                    <a id="contact-map-link" href="#" target="_blank" class="text-gold hover:text-white text-sm mt-4 inline-block">GET DIRECTIONS</a>
+                </div>
+                <div>
+                    <div class="w-12 h-12 bg-[#151515] rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6 border border-charcoal text-gold">
+                        <i data-lucide="clock"></i>
+                    </div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Hours</h4>
+                    <ul class="text-gray-400 space-y-2">
+                        <li>Mon - Fri: 9:00 AM - 7:00 PM</li>
+                        <li>Saturday: 10:00 AM - 5:00 PM</li>
+                        <li>Sunday: Closed</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="w-12 h-12 bg-[#151515] rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-6 border border-charcoal text-gold">
+                        <i data-lucide="phone"></i>
+                    </div>
+                    <h4 class="playfair text-2xl font-bold mb-4">Contact</h4>
+                    <p id="contact-phone" class="text-gray-400 mb-2">Loading...</p>
+                    <p id="contact-email" class="text-gray-400">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-charcoal bg-[#0B0B0B] py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="playfair text-2xl font-bold tracking-widest text-white uppercase" id="footer-brand">THE BARBER</div>
+            <div class="flex space-x-6">
+                <a href="manage-booking.html" class="text-gray-400 hover:text-white text-sm">Manage Booking</a>
+                <a href="admin/login.html" class="text-gray-400 hover:text-white text-sm">Admin Access</a>
+            </div>
+            <p class="text-gray-500 text-sm">&copy; <span id="current-year"></span> The Barber. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

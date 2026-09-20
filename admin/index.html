@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-[#0B0B0B] text-white flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#111111] border-r border-charcoal flex flex-col hidden md:flex">
+        <div class="h-20 flex items-center px-6 border-b border-charcoal">
+            <span class="playfair text-xl font-bold tracking-widest text-gold uppercase">ADMIN PORTAL</span>
+        </div>
+        <nav class="flex-grow py-6 px-4 space-y-2 overflow-y-auto" id="admin-nav">
+            <a href="#dashboard" class="tab-link flex items-center px-4 py-3 rounded bg-charcoal text-white font-medium" data-tab="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3 text-gold"></i> Dashboard</a>
+            <a href="#appointments" class="tab-link flex items-center px-4 py-3 rounded text-gray-400 hover:bg-[#151515] hover:text-white" data-tab="appointments"><i data-lucide="calendar-clock" class="w-5 h-5 mr-3"></i> Appointments</a>
+            <a href="#barbers" class="tab-link flex items-center px-4 py-3 rounded text-gray-400 hover:bg-[#151515] hover:text-white" data-tab="barbers"><i data-lucide="scissors" class="w-5 h-5 mr-3"></i> Barbers</a>
+            <a href="#services" class="tab-link flex items-center px-4 py-3 rounded text-gray-400 hover:bg-[#151515] hover:text-white" data-tab="services"><i data-lucide="list" class="w-5 h-5 mr-3"></i> Services</a>
+            <a href="#settings" class="tab-link flex items-center px-4 py-3 rounded text-gray-400 hover:bg-[#151515] hover:text-white" data-tab="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i> Settings</a>
+            <a href="#password" class="tab-link flex items-center px-4 py-3 rounded text-gray-400 hover:bg-[#151515] hover:text-white" data-tab="password"><i data-lucide="lock" class="w-5 h-5 mr-3"></i> Change Password</a>
+        </nav>
+        <div class="p-4 border-t border-charcoal">
+            <button id="btn-logout" class="flex items-center text-gray-400 hover:text-red-500 w-full px-4 py-2"><i data-lucide="log-out" class="w-5 h-5 mr-3"></i> Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col h-full overflow-hidden relative">
+        <header class="h-20 bg-[#111111] border-b border-charcoal flex items-center justify-between px-8 z-10">
+            <h2 class="playfair text-2xl font-bold" id="header-title">Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <a href="../index.html" target="_blank" class="text-sm text-gray-400 hover:text-white flex items-center"><i data-lucide="external-link" class="w-4 h-4 mr-1"></i> View Shop</a>
+            </div>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content flex-grow overflow-y-auto p-8">
+            <div id="stats-loading" class="text-center py-20 text-gray-500">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-4 text-gold"></i>
+                <p>Loading statistics...</p>
+            </div>
+
+            <div id="dashboard-content" class="hidden space-y-8">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-[#111111] border border-charcoal rounded-lg p-6">
+                        <span class="text-gray-400 text-sm uppercase tracking-wider">Today's Appointments</span>
+                        <p class="text-3xl font-bold mt-2" id="stat-today">0</p>
+                    </div>
+                    <div class="bg-[#111111] border border-charcoal rounded-lg p-6">
+                        <span class="text-gray-400 text-sm uppercase tracking-wider">Upcoming (7 days)</span>
+                        <p class="text-3xl font-bold mt-2" id="stat-upcoming">0</p>
+                    </div>
+                    <div class="bg-[#111111] border border-charcoal rounded-lg p-6">
+                        <span class="text-gray-400 text-sm uppercase tracking-wider">Completed (Month)</span>
+                        <p class="text-3xl font-bold mt-2" id="stat-completed">0</p>
+                    </div>
+                    <div class="bg-[#111111] border border-charcoal rounded-lg p-6">
+                        <span class="text-gray-400 text-sm uppercase tracking-wider">Total Revenue (Month)</span>
+                        <p class="text-3xl font-bold text-gold mt-2" id="stat-revenue">$0</p>
+                    </div>
+                </div>
+
+                <!-- Today's Appointments -->
+                <div class="bg-[#111111] border border-charcoal rounded-lg">
+                    <div class="p-6 border-b border-charcoal flex justify-between items-center">
+                        <h3 class="playfair text-xl font-bold">Today's Appointments</h3>
+                        <a href="#appointments" class="text-sm text-gold hover:text-white" onclick="document.querySelector('[data-tab=\\'appointments\\']').click()">View All</a>
+                    </div>
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-charcoal text-xs uppercase tracking-wider text-gray-400">
+                                    <th class="p-4 font-medium">Time</th>
+                                    <th class="p-4 font-medium">Customer</th>
+                                    <th class="p-4 font-medium">Service</th>
+                                    <th class="p-4 font-medium">Barber</th>
+                                    <th class="p-4 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="today-table-body" class="text-sm">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- APPOINTMENTS TAB -->
+        <section id="tab-appointments" class="tab-content flex-grow flex flex-col p-8 overflow-hidden hidden">
+            <div class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-end">
+                <div class="flex gap-4 w-full sm:w-auto">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Date Filter</label>
+                        <input type="date" id="filter-date" class="input-field py-2 text-sm w-full sm:w-auto">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Status</label>
+                        <select id="filter-status" class="input-field py-2 text-sm w-full sm:w-auto">
+                            <option value="all">All</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="btn-clear-filters" class="btn-outline py-2 text-sm">Clear Filters</button>
+            </div>
+
+            <div class="bg-[#111111] border border-charcoal rounded-lg flex-grow flex flex-col overflow-hidden">
+                <div id="appointments-loading" class="flex-grow flex items-center justify-center text-gray-500">
+                    <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-gold"></i>
+                </div>
+                
+                <div class="overflow-auto flex-grow hidden" id="table-container">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-charcoal z-10">
+                            <tr class="text-xs uppercase tracking-wider text-gray-400">
+                                <th class="p-4 font-medium">Ref</th>
+                                <th class="p-4 font-medium">Date & Time</th>
+                                <th class="p-4 font-medium">Customer</th>
+                                <th class="p-4 font-medium">Service & Barber</th>
+                                <th class="p-4 font-medium">Status</th>
+                                <th class="p-4 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="text-sm">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- BARBERS TAB -->
+        <section id="tab-barbers" class="tab-content flex-grow flex flex-col p-8 overflow-hidden hidden">
+            <div class="flex justify-end mb-6">
+                <button class="btn-primary py-2 px-4 text-sm flex items-center" onclick="openBarberModal()"><i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Barber</button>
+            </div>
+            <div id="barbers-loading" class="text-center py-20 text-gray-500">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-4 text-gold"></i>
+            </div>
+            <div id="barbers-grid-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden overflow-y-auto">
+                <!-- Injected by JS -->
+            </div>
+        </section>
+
+        <!-- SERVICES TAB -->
+        <section id="tab-services" class="tab-content flex-grow flex flex-col p-8 overflow-hidden hidden">
+            <div class="flex justify-end mb-6">
+                <button class="btn-primary py-2 px-4 text-sm flex items-center" onclick="openServiceModal()"><i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Service</button>
+            </div>
+            <div id="services-loading" class="text-center py-20 text-gray-500">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-4 text-gold"></i>
+            </div>
+            <div id="services-grid-admin" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden overflow-y-auto">
+                <!-- Injected by JS -->
+            </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab-content flex-grow flex flex-col p-8 overflow-hidden hidden">
+            <div id="settings-loading" class="text-center py-20 text-gray-500">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-4 text-gold"></i>
+            </div>
+            <form id="settings-form" class="max-w-2xl bg-[#111111] border border-charcoal rounded-lg p-8 hidden overflow-y-auto">
+                <h3 class="playfair text-xl font-bold mb-4 border-b border-charcoal pb-4">General Info</h3>
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Business Name</label>
+                        <input type="text" id="business_name" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Address</label>
+                        <input type="text" id="address" class="input-field">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                            <input type="text" id="phone" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                            <input type="text" id="email" class="input-field">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="playfair text-xl font-bold mb-4 border-b border-charcoal pb-4">Booking Settings</h3>
+                <div class="space-y-4 mb-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Booking Interval (min)</label>
+                            <input type="number" id="booking_interval" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Cancellation Window (hours)</label>
+                            <input type="number" id="cancellation_hours" class="input-field">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Timezone</label>
+                        <input type="text" id="timezone" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Currency</label>
+                        <input type="text" id="currency" class="input-field">
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t border-charcoal mb-8">
+                    <button type="submit" class="btn-primary" id="btn-save-settings">Save Settings</button>
+                </div>
+            </form>
+
+        </section>
+
+        <!-- PASSWORD TAB -->
+        <section id="tab-password" class="tab-content flex-grow flex flex-col p-8 overflow-hidden hidden">
+            <form id="password-form" class="max-w-2xl bg-[#111111] border border-charcoal rounded-lg p-8 overflow-y-auto">
+                <h3 class="playfair text-xl font-bold mb-4 border-b border-charcoal pb-4">Change Password</h3>
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Current Password</label>
+                        <input type="password" id="current_password" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">New Password</label>
+                        <input type="password" id="new_password" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm_password" required class="input-field">
+                    </div>
+                </div>
+                <div class="flex justify-end pt-6 border-t border-charcoal">
+                    <button type="submit" class="btn-primary" id="btn-change-password">Update Password</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Barbers Modal -->
+    <div id="barber-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="playfair text-2xl font-bold mb-6" id="barber-modal-title">Add Barber</h3>
+            <form id="barber-form" class="space-y-4">
+                <input type="hidden" id="barber-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Name</label>
+                    <input type="text" id="barber-name" required class="input-field">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Specialty</label>
+                        <input type="text" id="barber-spec" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Experience</label>
+                        <input type="text" id="barber-exp" class="input-field">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                        <input type="text" id="barber-phone" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                        <input type="email" id="barber-email" class="input-field">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Bio</label>
+                    <textarea id="barber-bio" class="input-field h-20"></textarea>
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-6 border-t border-charcoal">
+                    <button type="button" class="btn-outline" onclick="closeBarberModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Barber</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Services Modal -->
+    <div id="service-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="playfair text-2xl font-bold mb-6" id="service-modal-title">Add Service</h3>
+            <form id="service-form" class="space-y-4">
+                <input type="hidden" id="srv-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Name</label>
+                    <input type="text" id="srv-name" required class="input-field">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea id="srv-desc" required class="input-field h-24"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Price</label>
+                        <input type="number" id="srv-price" required min="0" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Duration (min)</label>
+                        <input type="number" id="srv-duration" required min="5" step="5" class="input-field">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Category</label>
+                    <input type="text" id="srv-cat" required class="input-field">
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-6 border-t border-charcoal">
+                    <button type="button" class="btn-outline" onclick="closeServiceModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

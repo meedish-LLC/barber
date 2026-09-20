@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Booking - The Premium Barbershop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#0B0B0B] text-white pt-20 h-screen flex flex-col">
+
+    <nav class="fixed top-0 w-full z-50 bg-[#0B0B0B]/90 backdrop-blur-sm border-b border-charcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="playfair text-2xl font-bold tracking-widest text-white uppercase" id="nav-brand">THE BARBER</a>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="index.html" class="text-gray-300 hover:text-gold transition-colors text-sm uppercase tracking-wider">Home</a>
+                    <a href="booking.html" class="btn-primary text-sm">BOOK APPOINTMENT</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center p-4 max-w-7xl mx-auto w-full">
+        
+        <div class="w-full max-w-md bg-[#111111] border border-charcoal rounded-xl p-8" id="lookup-view">
+            <h1 class="playfair text-3xl font-bold mb-2">Manage Booking</h1>
+            <p class="text-gray-400 mb-8 text-sm">Enter your reference number and phone to retrieve your appointment.</p>
+
+            <form id="lookup-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Booking Reference</label>
+                    <input type="text" id="lookup-ref" required placeholder="BS-XXXXXXXX-XXXX" class="input-field font-mono uppercase">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
+                    <input type="tel" id="lookup-phone" required class="input-field">
+                </div>
+                <button type="submit" class="btn-primary w-full mt-4" id="btn-lookup">FIND BOOKING</button>
+            </form>
+        </div>
+
+        <div class="w-full max-w-2xl bg-[#111111] border border-charcoal rounded-xl p-8 hidden" id="details-view">
+            <!-- Injected by JS -->
+        </div>
+
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/manage-booking.js"></script>
+</body>
+</html>
