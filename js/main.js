@@ -120,7 +120,7 @@ function renderBarbers(barbers) {
         return `
         <div class="bg-[#151515] border border-charcoal rounded-lg overflow-hidden hover:border-gold transition-all duration-300 flex flex-col h-full">
             <div class="h-64 overflow-hidden relative">
-                <img src="${imgUrl}" alt="${barber.name}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+                <img src="${imgUrl}" alt="${barber.name}" loading="lazy" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
                 <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#151515] to-transparent h-24"></div>
             </div>
             <div class="p-8 flex-grow flex flex-col">

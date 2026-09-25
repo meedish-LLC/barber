@@ -29,11 +29,11 @@ const SHEETS_CONFIG = {
   },
   BARBERS: {
     name: 'Barbers',
-    headers: ['id', 'name', 'bio', 'specialty', 'experience', 'image_url', 'phone', 'email', 'active', 'created_at', 'updated_at'],
+    headers: ['id', 'name', 'bio', 'specialty', 'experience', 'image_url', 'phone', 'email', 'weekly_day_off', 'active', 'created_at', 'updated_at'],
     defaultData: [
-      ['barber_1', 'John Carter', 'Master barber with a passion for classic cuts.', 'Classic cuts • Fades', '5+ Years', '', '555-0001', 'john@example.com', 'TRUE', new Date().toISOString(), new Date().toISOString()],
-      ['barber_2', 'Michael Davis', 'Expert in modern styles and beard shaping.', 'Modern styling', '3 Years', '', '555-0002', 'michael@example.com', 'TRUE', new Date().toISOString(), new Date().toISOString()],
-      ['barber_3', 'David Wilson', 'Specialist in skin fades and hot towel shaves.', 'Fades • Hot Towel', '7 Years', '', '555-0003', 'david@example.com', 'TRUE', new Date().toISOString(), new Date().toISOString()]
+      ['barber_1', 'John Carter', 'Master barber with a passion for classic cuts.', 'Classic cuts • Fades', '5+ Years', '', '555-0001', 'john@example.com', '7', 'TRUE', new Date().toISOString(), new Date().toISOString()],
+      ['barber_2', 'Michael Davis', 'Expert in modern styles and beard shaping.', 'Modern styling', '3 Years', '', '555-0002', 'michael@example.com', '7', 'TRUE', new Date().toISOString(), new Date().toISOString()],
+      ['barber_3', 'David Wilson', 'Specialist in skin fades and hot towel shaves.', 'Fades • Hot Towel', '7 Years', '', '555-0003', 'david@example.com', '7', 'TRUE', new Date().toISOString(), new Date().toISOString()]
     ]
   },
   WORKING_HOURS: {
@@ -124,6 +124,17 @@ function setupSpreadsheet() {
       Logger.log('Created sheet: ' + config.name);
     } else {
       Logger.log('Sheet already exists: ' + config.name);
+      // Check for missing headers and append them
+      const existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      const missingHeaders = config.headers.filter(h => !existingHeaders.includes(h));
+      if (missingHeaders.length > 0) {
+        const startCol = existingHeaders.length + 1;
+        sheet.getRange(1, startCol, 1, missingHeaders.length).setValues([missingHeaders]);
+        const headerRange = sheet.getRange(1, startCol, 1, missingHeaders.length);
+        headerRange.setFontWeight('bold');
+        headerRange.setBackground('#f3f4f6');
+        Logger.log('Added missing headers to ' + config.name + ': ' + missingHeaders.join(', '));
+      }
     }
   }
 }

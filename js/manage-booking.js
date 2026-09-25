@@ -1,6 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
+let servicesData = [];
+let barbersData = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
     
+    try {
+        servicesData = await API.getServices();
+        barbersData = await API.getBarbers();
+    } catch (e) {
+        console.error("Failed to load services and barbers data");
+    }
+
     document.getElementById('lookup-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -45,6 +55,12 @@ function renderDetails(apt) {
     const isCancelled = apt.status === 'Cancelled';
     const statusColor = isCancelled ? 'text-red-500' : 'text-green-500';
 
+    const service = servicesData.find(s => s.id === apt.service_id);
+    const barber = barbersData.find(b => b.id === apt.barber_id);
+    
+    const serviceName = service ? service.name : apt.service_id;
+    const barberName = barber ? barber.name : apt.barber_id;
+
     view.innerHTML = `
         <div class="flex justify-between items-start border-b border-charcoal pb-6 mb-6">
             <div>
@@ -66,12 +82,12 @@ function renderDetails(apt) {
                 <span class="font-bold text-lg text-gold">${Utils.formatTime(apt.start_time)}</span>
             </div>
             <div>
-                <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Service ID</span>
-                <span class="font-bold text-lg">${apt.service_id}</span> <!-- In real app, fetch service name -->
+                <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Service</span>
+                <span class="font-bold text-lg">${serviceName}</span>
             </div>
             <div>
-                <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Barber ID</span>
-                <span class="font-bold text-lg">${apt.barber_id}</span>
+                <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Barber</span>
+                <span class="font-bold text-lg">${barberName}</span>
             </div>
             <div>
                 <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Price</span>

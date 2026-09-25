@@ -65,10 +65,10 @@ function setupTabs() {
 async function loadInitialData() {
     try {
         const [aptData, srvData, brbData, custData, setData] = await Promise.all([
-            API.get('getAppointments'),
+            API.request('GET', 'getAppointments'),
             API.getServices(),
             API.getBarbers(),
-            API.get('getCustomers'),
+            API.request('GET', 'getCustomers'),
             API.getSettings()
         ]);
 
@@ -265,7 +265,7 @@ window.cancelAppointment = async (id) => {
         await API.post('cancelAppointment', { id });
         Utils.showToast("Appointment cancelled");
         // Reload appointments
-        const res = await API.get('getAppointments');
+        const res = await API.request('GET', 'getAppointments');
         allAppointments = res || [];
         renderAppointments();
         renderDashboard();
@@ -322,6 +322,7 @@ window.editBarber = (barber) => {
     document.getElementById('barber-exp').value = barber.experience;
     document.getElementById('barber-phone').value = barber.phone;
     document.getElementById('barber-email').value = barber.email;
+    document.getElementById('barber-day-off').value = barber.weekly_day_off || '7';
     document.getElementById('barber-bio').value = barber.bio;
     document.getElementById('barber-modal-title').textContent = 'Edit Barber';
     Utils.showModal('barber-modal');
@@ -433,6 +434,7 @@ function setupForms() {
             experience: document.getElementById('barber-exp').value,
             phone: document.getElementById('barber-phone').value,
             email: document.getElementById('barber-email').value,
+            weekly_day_off: document.getElementById('barber-day-off').value,
             bio: document.getElementById('barber-bio').value
         };
 

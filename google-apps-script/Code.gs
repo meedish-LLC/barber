@@ -176,9 +176,16 @@ function getAvailability(barberId, dateStr, serviceId) {
   const appointments = getSheetData('Appointments');
   const blockedSlots = getSheetData('BlockedSlots');
   const daysOff = getSheetData('DaysOff');
+  const allBarbers = getSheetData('Barbers');
   
   // Find slots for each barber
   barbersToCheck.forEach(bId => {
+    // Check if it is the barber's constant weekly day off
+    const barber = allBarbers.find(b => String(b.id) === String(bId));
+    if (barber && String(barber.weekly_day_off) === String(dayOfWeek)) {
+      return;
+    }
+
     // Check if day off
     const isDayOff = daysOff.find(d => {
       let dDate = d.date instanceof Date ? d.date.toISOString().split('T')[0] : String(d.date);
@@ -522,7 +529,7 @@ function handleCreateBarber(payload) {
   const sheet = ss.getSheetByName('Barbers');
   const newId = 'barber_' + new Date().getTime();
   sheet.appendRow([
-    newId, payload.name, payload.bio, payload.specialty, payload.experience, payload.image_url || '', payload.phone, payload.email, 'TRUE', new Date().toISOString(), new Date().toISOString()
+    newId, payload.name, payload.bio, payload.specialty, payload.experience, payload.image_url || '', payload.phone, payload.email, payload.weekly_day_off || '7', 'TRUE', new Date().toISOString(), new Date().toISOString()
   ]);
   return respond({ id: newId });
 }
