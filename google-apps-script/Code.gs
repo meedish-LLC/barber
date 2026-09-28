@@ -19,11 +19,15 @@ function sheetToObjects(sheet) {
   });
 }
 
+const sheetDataCache = {};
 function getSheetData(sheetName) {
+  if (sheetDataCache[sheetName]) return sheetDataCache[sheetName];
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(sheetName);
   if (!sheet) return [];
-  return sheetToObjects(sheet);
+  const data = sheetToObjects(sheet);
+  sheetDataCache[sheetName] = data;
+  return data;
 }
 
 function respond(data, success = true, error = null, message = null) {

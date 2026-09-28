@@ -293,7 +293,9 @@ async function fetchAvailability() {
             <p class="text-gray-400">Finding available slots...</p>
         </div>
     `;
-    lucide.createIcons();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 
     try {
         const slots = await API.getAvailability(state.selections.barberId, state.selections.date, state.selections.serviceId);
@@ -307,7 +309,9 @@ async function fetchAvailability() {
                 <button class="btn-outline mt-4" onclick="fetchAvailability()">Retry</button>
             </div>
         `;
-        lucide.createIcons();
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     }
 }
 
