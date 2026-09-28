@@ -86,6 +86,18 @@
 
             // Clear session to prevent re-submits if they go back
             // sessionStorage.removeItem('booking_result');
+            if (window.self !== window.top) {
+                // We are in an iframe (admin modal)
+                const homeBtn = document.querySelector('a[href="index.html"]');
+                if (homeBtn) {
+                    homeBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 mr-2"></i> DONE';
+                    homeBtn.href = '#';
+                    homeBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.parent.closeBookingModal();
+                    });
+                }
+            }
         });
     </script>
 </body>
