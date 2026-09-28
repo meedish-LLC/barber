@@ -559,3 +559,17 @@ function setupForms() {
         });
     }
 }
+
+ w i n d o w . o p e n B o o k i n g M o d a l   =   ( )   = >   { 
+         d o c u m e n t . g e t E l e m e n t B y I d ( ' b o o k i n g - m o d a l ' ) . c l a s s L i s t . r e m o v e ( ' h i d d e n ' ) ; 
+         d o c u m e n t . g e t E l e m e n t B y I d ( ' b o o k i n g - i f r a m e ' ) . s r c   =   ' . . / b o o k i n g . h t m l ' ; 
+ } ; 
+ 
+ w i n d o w . c l o s e B o o k i n g M o d a l   =   ( )   = >   { 
+         d o c u m e n t . g e t E l e m e n t B y I d ( ' b o o k i n g - m o d a l ' ) . c l a s s L i s t . a d d ( ' h i d d e n ' ) ; 
+         d o c u m e n t . g e t E l e m e n t B y I d ( ' b o o k i n g - i f r a m e ' ) . s r c   =   ' a b o u t : b l a n k ' ; 
+         / /   R e l o a d   d a t a   w h e n   c l o s i n g   i n   c a s e   t h e y   b o o k e d   s o m e t h i n g 
+         l o a d I n i t i a l D a t a ( ) ; 
+ } ; 
+  
+ 

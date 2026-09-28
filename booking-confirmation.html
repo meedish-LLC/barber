@@ -58,11 +58,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 no-print">
-                <button id="btn-calendar" class="btn-primary flex items-center justify-center"><i data-lucide="calendar-plus" class="w-4 h-4 mr-2"></i> ADD TO CALENDAR</button>
-                <button onclick="window.print()" class="btn-outline flex items-center justify-center"><i data-lucide="printer" class="w-4 h-4 mr-2"></i> PRINT</button>
-                <a href="manage-booking.html" class="btn-outline flex items-center justify-center"><i data-lucide="settings" class="w-4 h-4 mr-2"></i> MANAGE BOOKING</a>
-                <a href="index.html" class="btn-outline flex items-center justify-center"><i data-lucide="home" class="w-4 h-4 mr-2"></i> BACK HOME</a>
+            <div class="flex justify-center mt-6 no-print">
+                <a href="index.html" class="btn-primary flex items-center justify-center w-full max-w-sm"><i data-lucide="home" class="w-4 h-4 mr-2"></i> BACK HOME</a>
             </div>
 
         </div>
@@ -87,17 +84,6 @@
             document.getElementById('conf-date').textContent = Utils.formatDate(data.date);
             document.getElementById('conf-time').textContent = Utils.formatTime(data.start);
 
-            document.getElementById('btn-calendar').addEventListener('click', () => {
-                Utils.generateICS({
-                    date: data.date,
-                    start_time: data.start,
-                    end_time: data.end,
-                    service_name: data.service,
-                    barber_name: data.barber,
-                    address: "The Premium Barbershop" // Ideally from settings, hardcoded here for simplicity
-                });
-            });
-            
             // Clear session to prevent re-submits if they go back
             // sessionStorage.removeItem('booking_result');
         });

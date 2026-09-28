@@ -107,8 +107,10 @@
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
+                <div class="flex gap-4">
+                    <button id="btn-clear-filters" class="btn-outline py-2 text-sm">Clear Filters</button>
+                    <button onclick="openBookingModal()" class="btn-primary py-2 text-sm flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add Appointment</button>
                 </div>
-                <button id="btn-clear-filters" class="btn-outline py-2 text-sm">Clear Filters</button>
             </div>
 
             <div class="bg-[#111111] border border-charcoal rounded-lg flex-grow flex flex-col overflow-hidden">
@@ -243,6 +245,19 @@
             </form>
         </section>
     </main>
+
+    <!-- Booking Modal (iframe) -->
+    <div id="booking-modal" class="modal-overlay hidden fixed inset-0 bg-black/80 z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="modal-content bg-[#111111] border border-charcoal rounded-xl w-full max-w-4xl h-[90vh] flex flex-col relative overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-charcoal">
+                <h3 class="playfair text-xl font-bold">New Appointment</h3>
+                <button onclick="closeBookingModal()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <iframe id="booking-iframe" class="w-full flex-grow border-0" src="about:blank"></iframe>
+        </div>
+    </div>
 
     <!-- Barbers Modal -->
     <div id="barber-modal" class="modal-overlay">
