@@ -152,11 +152,11 @@ function getAppointment(reference, phone) {
   const appointments = getSheetData('Appointments');
   const customers = getSheetData('Customers');
   
-  const apt = appointments.find(a => a.booking_reference === reference);
+  const apt = appointments.find(a => String(a.booking_reference).toUpperCase() === String(reference).toUpperCase());
   if (!apt) return null;
   
-  const cust = customers.find(c => c.id === apt.customer_id);
-  if (!cust || cust.phone !== phone) {
+  const cust = customers.find(c => String(c.id) === String(apt.customer_id));
+  if (!cust || String(cust.phone).trim() !== String(phone).trim()) {
      throw new Error("Invalid phone number or reference.");
   }
   
@@ -411,7 +411,7 @@ function handleCancelAppointment(payload) {
   let rowIndex = -1;
   let apt = null;
   for (let i = 0; i < appointments.length; i++) {
-    if (appointments[i].booking_reference === reference) {
+    if (String(appointments[i].booking_reference).toUpperCase() === String(reference).toUpperCase()) {
       rowIndex = i + 2; // +1 for 0-index, +1 for header
       apt = appointments[i];
       break;
@@ -420,8 +420,8 @@ function handleCancelAppointment(payload) {
   
   if (!apt) return respond(null, false, 'NOT_FOUND', 'Appointment not found');
   
-  const cust = customers.find(c => c.id === apt.customer_id);
-  if (!cust || cust.phone !== phone) {
+  const cust = customers.find(c => String(c.id) === String(apt.customer_id));
+  if (!cust || String(cust.phone).trim() !== String(phone).trim()) {
      return respond(null, false, 'UNAUTHORIZED', 'Invalid phone number');
   }
   
