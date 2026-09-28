@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Tab Switching Logic
     setupTabs();
+    setupSidebar();
     
     // Initial Load - load dashboard data which has everything
     await loadInitialData();
@@ -573,4 +574,37 @@ window.closeBookingModal = () => {
 };
 
 
+
+
+function setupSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const openBtn = document.getElementById('open-sidebar-btn');
+    const closeBtn = document.getElementById('close-sidebar-btn');
+    
+    if(!sidebar || !openBtn) return;
+
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+
+    openBtn.addEventListener('click', openSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('#admin-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                closeSidebar();
+            }
+        });
+    });
+}
 

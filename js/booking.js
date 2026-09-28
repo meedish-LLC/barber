@@ -122,6 +122,21 @@ function updateProgress() {
     
     lucide.createIcons();
     updateSummary();
+
+    // Mobile progress update
+    const currentStepObj = steps.find(s => s.num === state.step);
+    if (currentStepObj) {
+        const mStepCurrent = document.getElementById('mobile-step-current');
+        const mStepTitle = document.getElementById('mobile-step-title');
+        const mProgressBar = document.getElementById('mobile-progress-bar');
+        
+        if (mStepCurrent) mStepCurrent.textContent = state.step;
+        if (mStepTitle) mStepTitle.textContent = currentStepObj.title;
+        if (mProgressBar) {
+            const percentage = (state.step / steps.length) * 100;
+            mProgressBar.style.width = `${percentage}%`;
+        }
+    }
 }
 
 function updateSummary() {

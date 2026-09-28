@@ -48,6 +48,18 @@
 
         <!-- Right side: Dynamic Form Area -->
         <section class="w-full md:w-2/3 p-4 md:p-0 flex flex-col overflow-hidden relative" id="booking-container">
+            
+            <!-- Mobile Progress Indicator -->
+            <div class="md:hidden mb-4 bg-[#111111] border border-charcoal rounded-lg p-3 flex flex-col gap-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-400">Step <span id="mobile-step-current" class="text-gold font-bold">1</span> of 6</span>
+                    <span id="mobile-step-title" class="font-medium">Service</span>
+                </div>
+                <div class="w-full bg-charcoal h-1.5 rounded-full overflow-hidden">
+                    <div id="mobile-progress-bar" class="bg-gold h-full transition-all duration-300" style="width: 16.6%;"></div>
+                </div>
+            </div>
+
             <div class="flex-grow overflow-y-auto bg-[#151515] border border-charcoal rounded-xl p-6 md:p-10" id="step-content">
                 <!-- Step content injected here -->
                 <div class="flex items-center justify-center h-full">
