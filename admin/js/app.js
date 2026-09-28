@@ -64,19 +64,13 @@ function setupTabs() {
 
 async function loadInitialData() {
     try {
-        const [aptData, srvData, brbData, custData, setData] = await Promise.all([
-            API.request('GET', 'getAppointments'),
-            API.getServices(),
-            API.getBarbers(),
-            API.request('GET', 'getCustomers'),
-            API.getSettings()
-        ]);
+        const initData = await API.request('GET', 'getAdminInitData');
 
-        allAppointments = aptData || [];
-        allServices = srvData || [];
-        allBarbers = brbData || [];
-        allCustomers = custData || [];
-        allSettings = setData || {};
+        allAppointments = initData.appointments || [];
+        allServices = initData.services || [];
+        allBarbers = initData.barbers || [];
+        allCustomers = initData.customers || [];
+        allSettings = initData.settings || {};
 
         renderDashboard();
         renderAppointments();

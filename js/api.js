@@ -70,6 +70,7 @@ const API = {
     getSettings: () => API.get('getSettings'),
     getServices: () => API.get('getServices'),
     getBarbers: () => API.get('getBarbers'),
+    getInitData: () => API.get('getInitData'),
     getAvailability: (barberId, date, serviceId) => API.request('GET', `getAvailability&barber_id=${barberId}&date=${date}&service_id=${serviceId}`),
     getAppointment: (reference, phone) => API.request('GET', `getAppointment&reference=${reference}&phone=${phone}`),
     

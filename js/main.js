@@ -25,16 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadHomeData() {
     try {
-        // Fetch settings, services, and barbers in parallel
-        const [settings, services, barbers] = await Promise.all([
-            API.getSettings(),
-            API.getServices(),
-            API.getBarbers()
-        ]);
+        // Fetch settings, services, and barbers in one call
+        const initData = await API.getInitData();
 
-        updateContactInfo(settings);
-        renderServices(services);
-        renderBarbers(barbers);
+        updateContactInfo(initData.settings);
+        renderServices(initData.services);
+        renderBarbers(initData.barbers);
 
     } catch (error) {
         console.error("Failed to load home data:", error);

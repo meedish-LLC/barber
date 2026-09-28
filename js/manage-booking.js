@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
     
     try {
-        servicesData = await API.getServices();
-        barbersData = await API.getBarbers();
+        const initData = await API.getInitData();
+        servicesData = initData.services;
+        barbersData = initData.barbers;
     } catch (e) {
         console.error("Failed to load services and barbers data");
     }

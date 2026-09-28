@@ -36,12 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function initializeData() {
     try {
-        const [services, barbers] = await Promise.all([
-            API.getServices(),
-            API.getBarbers()
-        ]);
-        state.services = services;
-        state.barbers = barbers;
+        const initData = await API.getInitData();
+        state.services = initData.services;
+        state.barbers = initData.barbers;
 
         // URL parameters for pre-selection
         const urlParams = new URLSearchParams(window.location.search);

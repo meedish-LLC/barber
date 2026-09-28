@@ -44,6 +44,18 @@ function doGet(e) {
       case 'getSettings': return respond(getSettings());
       case 'getServices': return respond(getServices());
       case 'getBarbers': return respond(getBarbers());
+      case 'getAdminInitData': return respond({
+        appointments: getAppointments(),
+        services: getServices(),
+        barbers: getBarbers(),
+        customers: getSheetData('Customers'),
+        settings: getSettings()
+      });
+      case 'getInitData': return respond({
+        settings: getSettings(),
+        services: getServices(),
+        barbers: getBarbers()
+      });
       case 'getAvailability': return respond(getAvailability(e.parameter.barber_id, e.parameter.date, e.parameter.service_id));
       case 'getAppointment': return respond(getAppointment(e.parameter.reference, e.parameter.phone));
       case 'getAppointments': return respond(getAppointments()); // Admin
