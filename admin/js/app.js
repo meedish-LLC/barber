@@ -1,4 +1,4 @@
-﻿// Global State
+// Global State
 let allAppointments = [];
 let allServices = [];
 let allBarbers = [];
@@ -561,12 +561,12 @@ function setupForms() {
 }
 
 window.openBookingModal = () => {
-    document.getElementById('booking-modal').classList.remove('hidden');
     document.getElementById('booking-iframe').src = '../booking.html';
+    Utils.showModal('booking-modal');
 };
 
 window.closeBookingModal = () => {
-    document.getElementById('booking-modal').classList.add('hidden');
+    Utils.hideModal('booking-modal');
     document.getElementById('booking-iframe').src = 'about:blank';
     // Reload data when closing in case they booked something
     loadInitialData();
