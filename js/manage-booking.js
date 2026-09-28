@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderDetails(data);
 
         } catch (error) {
-            Utils.showToast('Error finding appointment.', 'error');
+            Utils.showToast(error.message || 'Error finding appointment.', 'error');
             resetBtn(btn);
         }
     });

@@ -71,8 +71,8 @@ const API = {
     getServices: () => API.get('getServices'),
     getBarbers: () => API.get('getBarbers'),
     getInitData: () => API.get('getInitData'),
-    getAvailability: (barberId, date, serviceId) => API.request('GET', `getAvailability&barber_id=${barberId}&date=${date}&service_id=${serviceId}`),
-    getAppointment: (reference, phone) => API.request('GET', `getAppointment&reference=${reference}&phone=${phone}`),
+    getAvailability: (barberId, date, serviceId) => API.request('GET', `getAvailability&barber_id=${encodeURIComponent(barberId)}&date=${encodeURIComponent(date)}&service_id=${encodeURIComponent(serviceId)}`),
+    getAppointment: (reference, phone) => API.request('GET', `getAppointment&reference=${encodeURIComponent(reference)}&phone=${encodeURIComponent(phone)}`),
     
     createAppointment: (data) => API.post('createAppointment', data),
     cancelAppointment: (reference, phone) => API.post('cancelAppointment', { reference, phone })
