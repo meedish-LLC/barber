@@ -1,4 +1,4 @@
-# The Premium Barbershop Booking System
+# Premium Barbershop Booking System
 
 A fully functional, production-ready barbershop booking and management system built without any modern frameworks.
 

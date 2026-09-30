@@ -52,7 +52,7 @@ async function loadHomeData() {
 }
 
 function updateContactInfo(settings) {
-    const bName = settings.business_name || 'THE PREMIUM BARBERSHOP';
+    const bName = settings.business_name || 'Premium BARBERSHOP';
     document.title = bName;
     document.getElementById('nav-brand').textContent = bName;
     document.getElementById('footer-brand').textContent = bName;

@@ -3,7 +3,7 @@ const SHEETS_CONFIG = {
     name: 'Settings',
     headers: ['key', 'value'],
     defaultData: [
-      ['business_name', 'The Premium Barbershop'],
+      ['business_name', 'Premium Barbershop'],
       ['address', '123 Grooming Street, NY 10001'],
       ['phone', '+1 (555) 123-4567'],
       ['email', 'hello@premiumbarbershop.com'],
