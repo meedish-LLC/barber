@@ -100,21 +100,33 @@ function updateProgress() {
 
     list.innerHTML = steps.map(s => {
         let statusClass = 'text-gray-500';
-        let bulletClass = 'bg-charcoal border-charcoal';
+        let bulletHtml = '';
         
         if (s.num < state.step) {
-            statusClass = 'text-gold';
-            bulletClass = 'bg-gold border-gold';
+            statusClass = 'text-gold font-medium';
+            bulletHtml = `
+                <div class="w-7 h-7 rounded-full bg-gold text-[#0d0f14] shadow-sm flex items-center justify-center font-bold z-10">
+                    <i data-lucide="check" class="w-4 h-4 stroke-[2.5]"></i>
+                </div>
+            `;
         } else if (s.num === state.step) {
             statusClass = 'text-white font-bold';
-            bulletClass = 'bg-charcoal border-gold';
+            bulletHtml = `
+                <div class="w-7 h-7 rounded-full neu-inset border border-gold text-gold flex items-center justify-center font-bold text-xs z-10 neu-step-active">
+                    ${s.num}
+                </div>
+            `;
+        } else {
+            bulletHtml = `
+                <div class="w-7 h-7 rounded-full neu-circle-inset text-gray-500 flex items-center justify-center text-xs z-10">
+                    ${s.num}
+                </div>
+            `;
         }
 
         return `
-            <li class="relative flex items-center gap-6">
-                <div class="before:absolute before:left-[11px] before:h-full before:w-[1px] before:bg-charcoal flex items-center justify-center w-6 h-6 rounded-full border-2 ${bulletClass} z-10">
-                    ${s.num < state.step ? '<i data-lucide="check" class="w-3 h-3 text-[#0B0B0B]"></i>' : `<span class="text-xs ${s.num === state.step ? 'text-gold' : 'text-gray-500'}">${s.num}</span>`}
-                </div>
+            <li class="relative flex items-center gap-5">
+                ${bulletHtml}
                 <p class="${statusClass} text-sm uppercase tracking-wider">${s.title}</p>
             </li>
         `;
@@ -152,18 +164,18 @@ function updateSummary() {
     let html = '';
     if (state.selections.serviceId) {
         const srv = state.services.find(s => s.id === state.selections.serviceId);
-        html += `<div class="flex justify-between border-b border-charcoal pb-2"><span>Service</span> <span class="text-white">${srv.name}</span></div>`;
+        html += `<div class="flex justify-between border-b border-[rgba(255,255,255,0.05)] pb-2"><span class="text-gray-400">Service</span> <span class="text-white font-medium">${srv.name}</span></div>`;
     }
     if (state.selections.barberId) {
         const brb = state.selections.barberId === 'any' ? {name: 'Any Available'} : state.barbers.find(b => b.id === state.selections.barberId);
-        html += `<div class="flex justify-between border-b border-charcoal pb-2 mt-2"><span>Barber</span> <span class="text-white">${brb.name}</span></div>`;
+        html += `<div class="flex justify-between border-b border-[rgba(255,255,255,0.05)] pb-2 mt-2"><span class="text-gray-400">Barber</span> <span class="text-white font-medium">${brb.name}</span></div>`;
     }
     if (state.selections.date) {
-        html += `<div class="flex justify-between border-b border-charcoal pb-2 mt-2"><span>Date</span> <span class="text-white">${Utils.formatDate(state.selections.date)}</span></div>`;
+        html += `<div class="flex justify-between border-b border-[rgba(255,255,255,0.05)] pb-2 mt-2"><span class="text-gray-400">Date</span> <span class="text-white font-medium">${Utils.formatDate(state.selections.date)}</span></div>`;
     }
     if (state.selections.timeId) {
         const [_, start] = state.selections.timeId.split('|');
-        html += `<div class="flex justify-between pb-2 mt-2"><span>Time</span> <span class="text-white text-gold">${Utils.formatTime(start)}</span></div>`;
+        html += `<div class="flex justify-between pb-1 mt-2"><span class="text-gray-400">Time</span> <span class="text-gold font-bold">${Utils.formatTime(start)}</span></div>`;
     }
 
     content.innerHTML = html;
@@ -218,15 +230,18 @@ function renderServices(container) {
     state.services.forEach(s => {
         const isSelected = state.selections.serviceId === s.id;
         html += `
-            <div class="border ${isSelected ? 'border-gold bg-[rgba(201,162,39,0.05)]' : 'border-charcoal bg-[#111111]'} rounded-lg p-5 cursor-pointer hover:border-gold transition-colors" onclick="selectService('${s.id}')">
+            <div class="${isSelected ? 'neu-inset border border-gold/50' : 'neu-card-sm border border-[rgba(255,255,255,0.04)] hover:border-gold/30 hover:-translate-y-0.5'} rounded-xl p-5 cursor-pointer transition-all duration-200" onclick="selectService('${s.id}')">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h4 class="text-xl font-bold ${isSelected ? 'text-gold' : 'text-white'}">${s.name}</h4>
-                        <p class="text-gray-400 text-sm mt-1">${s.description}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            ${isSelected ? '<span class="w-2.5 h-2.5 rounded-full bg-gold shadow-sm inline-block"></span>' : ''}
+                            <h4 class="text-xl font-bold ${isSelected ? 'text-gold' : 'text-white'}">${s.name}</h4>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-1 leading-relaxed">${s.description}</p>
                     </div>
-                    <div class="text-right">
-                        <span class="block font-bold">${Utils.formatCurrency(s.price)}</span>
-                        <span class="text-xs text-gray-500">${s.duration_minutes} min</span>
+                    <div class="text-right flex-shrink-0 ml-4">
+                        <span class="block font-bold text-lg text-gold">${Utils.formatCurrency(s.price)}</span>
+                        <span class="text-xs text-gray-400 font-medium">${s.duration_minutes} min</span>
                     </div>
                 </div>
             </div>
@@ -244,17 +259,17 @@ window.selectService = (id) => {
 
 function renderBarbers(container) {
     let html = `<h3 class="playfair text-3xl font-bold mb-6">Select Barber</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">`;
     
     // Any barber option
     const anySelected = state.selections.barberId === 'any';
     html += `
-        <div class="border ${anySelected ? 'border-gold bg-[rgba(201,162,39,0.05)]' : 'border-charcoal bg-[#111111]'} rounded-lg p-5 cursor-pointer hover:border-gold flex flex-col items-center justify-center text-center h-48" onclick="selectBarber('any')">
-            <div class="w-16 h-16 rounded-full bg-charcoal border border-gray-700 flex items-center justify-center mb-3 text-gold">
-                <i data-lucide="users" class="w-8 h-8"></i>
+        <div class="${anySelected ? 'neu-inset border border-gold/50' : 'neu-card-sm border border-[rgba(255,255,255,0.04)] hover:border-gold/30 hover:-translate-y-0.5'} rounded-xl p-6 cursor-pointer flex flex-col items-center justify-center text-center h-52 transition-all duration-200" onclick="selectBarber('any')">
+            <div class="w-16 h-16 rounded-full ${anySelected ? 'neu-inset text-gold border border-gold/30' : 'neu-circle text-gold'} flex items-center justify-center mb-3">
+                <i data-lucide="users" class="w-7 h-7"></i>
             </div>
             <h4 class="text-lg font-bold ${anySelected ? 'text-gold' : 'text-white'}">Any Available</h4>
-            <p class="text-xs text-gray-500 mt-1">First available time</p>
+            <p class="text-xs text-gray-400 mt-1">First available time</p>
         </div>
     `;
 
@@ -262,10 +277,10 @@ function renderBarbers(container) {
         const isSelected = state.selections.barberId === b.id;
         const img = b.image_url || 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&q=80&w=150';
         html += `
-            <div class="border ${isSelected ? 'border-gold bg-[rgba(201,162,39,0.05)]' : 'border-charcoal bg-[#111111]'} rounded-lg p-5 cursor-pointer hover:border-gold flex flex-col items-center text-center h-48" onclick="selectBarber('${b.id}')">
-                <img src="${img}" alt="${b.name}" class="w-16 h-16 rounded-full object-cover mb-3 border ${isSelected ? 'border-gold' : 'border-gray-700'} grayscale hover:grayscale-0 transition-all">
+            <div class="${isSelected ? 'neu-inset border border-gold/50' : 'neu-card-sm border border-[rgba(255,255,255,0.04)] hover:border-gold/30 hover:-translate-y-0.5'} rounded-xl p-6 cursor-pointer flex flex-col items-center text-center h-52 transition-all duration-200" onclick="selectBarber('${b.id}')">
+                <img src="${img}" alt="${b.name}" class="w-16 h-16 rounded-full object-cover mb-3 ${isSelected ? 'border-2 border-gold shadow-md' : 'border border-[rgba(255,255,255,0.1)] grayscale hover:grayscale-0'} transition-all">
                 <h4 class="text-lg font-bold ${isSelected ? 'text-gold' : 'text-white'}">${b.name}</h4>
-                <p class="text-xs text-gray-500 mt-1 line-clamp-1">${b.specialty}</p>
+                <p class="text-xs text-gray-400 mt-1 line-clamp-1">${b.specialty}</p>
             </div>
         `;
     });
@@ -281,12 +296,16 @@ window.selectBarber = (id) => {
 };
 
 function renderDate(container) {
-    // Simple custom date picker logic
     let html = `<h3 class="playfair text-3xl font-bold mb-6">Select Date</h3>
-                <div class="max-w-sm mx-auto">
-                    <input type="date" id="date-picker" class="input-field text-xl py-4" min="${new Date().toLocaleDateString('en-CA')}" onchange="selectDate(this.value)">
+                <div class="max-w-md mx-auto neu-inset p-8 rounded-2xl text-center border border-[rgba(255,255,255,0.04)]">
+                    <div class="w-12 h-12 neu-circle mx-auto mb-4 flex items-center justify-center text-gold">
+                        <i data-lucide="calendar" class="w-6 h-6"></i>
+                    </div>
+                    <label class="block text-sm text-gray-300 font-medium mb-4 uppercase tracking-wider">Choose Appointment Date</label>
+                    <input type="date" id="date-picker" class="input-field text-xl py-4 text-center cursor-pointer font-medium" min="${new Date().toLocaleDateString('en-CA')}" onchange="selectDate(this.value)">
                 </div>`;
     container.innerHTML = html;
+    lucide.createIcons();
     
     if (state.selections.date) {
         document.getElementById('date-picker').value = state.selections.date;
@@ -303,9 +322,9 @@ window.selectDate = (val) => {
 async function fetchAvailability() {
     const container = document.getElementById('step-content');
     container.innerHTML = `
-        <div class="flex items-center justify-center h-full flex-col">
+        <div class="flex items-center justify-center h-full flex-col py-16">
             <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-gold mb-4"></i>
-            <p class="text-gray-400">Finding available slots...</p>
+            <p class="text-gray-400 font-medium">Finding available slots...</p>
         </div>
     `;
     if (window.lucide) {
@@ -318,10 +337,10 @@ async function fetchAvailability() {
         renderTime(container);
     } catch (e) {
         container.innerHTML = `
-            <div class="text-center text-red-500">
-                <i data-lucide="alert-circle" class="w-10 h-10 mx-auto mb-2"></i>
-                <p>Unable to load availability. Please try again.</p>
-                <button class="btn-outline mt-4" onclick="fetchAvailability()">Retry</button>
+            <div class="text-center text-red-400 py-12">
+                <i data-lucide="alert-circle" class="w-10 h-10 mx-auto mb-3"></i>
+                <p class="font-medium">Unable to load availability. Please try again.</p>
+                <button class="btn-outline mt-6" onclick="fetchAvailability()">Retry</button>
             </div>
         `;
         if (window.lucide) {
@@ -334,24 +353,25 @@ function renderTime(container) {
     if (state.availableSlots.length === 0) {
         container.innerHTML = `
             <h3 class="playfair text-3xl font-bold mb-6">Select Time</h3>
-            <div class="text-center py-10 bg-[#111111] border border-charcoal rounded-lg">
-                <p class="text-gray-400 mb-4">No available times on this date for the selected barber/service.</p>
+            <div class="text-center py-12 neu-inset rounded-2xl max-w-lg mx-auto p-8 border border-[rgba(255,255,255,0.04)]">
+                <i data-lucide="clock" class="w-10 h-10 text-gray-500 mx-auto mb-3"></i>
+                <p class="text-gray-400 mb-6 font-medium">No available times on this date for the selected barber/service.</p>
                 <button class="btn-outline" onclick="document.getElementById('btn-back').click()">Choose Another Date</button>
             </div>
         `;
+        if (window.lucide) lucide.createIcons();
         return;
     }
 
     let html = `<h3 class="playfair text-3xl font-bold mb-6">Select Time</h3>
-                <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">`;
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-3.5">`;
     
     state.availableSlots.forEach(slot => {
-        // ID composite to hold barber info in case 'any' was selected
         const tId = `${slot.barber_id}|${slot.start_time}|${slot.end_time}`;
         const isSelected = state.selections.timeId === tId;
         
         html += `
-            <button class="py-3 px-2 border rounded text-center transition-colors ${isSelected ? 'border-gold bg-gold text-[#0B0B0B] font-bold' : 'border-charcoal bg-[#111111] text-white hover:border-gold'}"
+            <button class="neu-slot-btn py-3.5 px-3 rounded-xl text-center transition-all ${isSelected ? 'selected' : 'text-white'}"
                 onclick="selectTime('${tId}')">
                 ${Utils.formatTime(slot.start_time)}
             </button>
@@ -372,22 +392,22 @@ function renderDetails(container) {
     const c = state.selections.customer;
     let html = `
         <h3 class="playfair text-3xl font-bold mb-6">Your Details</h3>
-        <div class="space-y-4">
+        <div class="neu-card p-6 md:p-8 space-y-5 max-w-xl mx-auto border border-[rgba(255,255,255,0.04)]">
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Full Name *</label>
-                <input type="text" id="cust-name" class="input-field" value="${c.name}" oninput="updateCustomer('name', this.value)">
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Full Name *</label>
+                <input type="text" id="cust-name" class="input-field" placeholder="John Doe" value="${c.name}" oninput="updateCustomer('name', this.value)">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Phone Number *</label>
-                <input type="tel" id="cust-phone" class="input-field" value="${c.phone}" oninput="updateCustomer('phone', this.value)">
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Phone Number *</label>
+                <input type="tel" id="cust-phone" class="input-field" placeholder="(555) 000-0000" value="${c.phone}" oninput="updateCustomer('phone', this.value)">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
-                <input type="email" id="cust-email" class="input-field" value="${c.email}" oninput="updateCustomer('email', this.value)">
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Email Address</label>
+                <input type="email" id="cust-email" class="input-field" placeholder="john@example.com" value="${c.email}" oninput="updateCustomer('email', this.value)">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-400 mb-1">Additional Notes</label>
-                <textarea id="cust-notes" class="input-field h-24" oninput="updateCustomer('notes', this.value)">${c.notes}</textarea>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Additional Notes</label>
+                <textarea id="cust-notes" class="input-field h-24" placeholder="Any preferences, allergies, or styling requests..." oninput="updateCustomer('notes', this.value)">${c.notes}</textarea>
             </div>
         </div>
     `;
@@ -408,49 +428,49 @@ function renderConfirm(container) {
     let html = `
         <h3 class="playfair text-3xl font-bold mb-8 text-center">Confirm Your Appointment</h3>
         
-        <div class="bg-[#111111] border border-charcoal rounded-lg p-6 space-y-6">
-            <div class="grid grid-cols-2 gap-4 border-b border-charcoal pb-6">
+        <div class="neu-inset rounded-2xl p-6 md:p-8 space-y-6 max-w-2xl mx-auto border border-[rgba(255,255,255,0.04)]">
+            <div class="grid grid-cols-2 gap-4 border-b border-[rgba(255,255,255,0.06)] pb-6">
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Service</span>
-                    <span class="text-lg font-bold">${srv.name}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Service</span>
+                    <span class="text-lg font-bold text-white">${srv.name}</span>
                 </div>
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Price</span>
-                    <span class="text-lg font-bold text-gold">${Utils.formatCurrency(srv.price)}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Price</span>
+                    <span class="text-xl font-bold text-gold">${Utils.formatCurrency(srv.price)}</span>
                 </div>
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Barber</span>
-                    <span class="text-lg">${brb.name}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Barber</span>
+                    <span class="text-lg text-white">${brb.name}</span>
                 </div>
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Duration</span>
-                    <span class="text-lg">${srv.duration_minutes} min</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Duration</span>
+                    <span class="text-lg text-gray-300">${srv.duration_minutes} min</span>
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-4 border-b border-charcoal pb-6">
+            <div class="grid grid-cols-2 gap-4 border-b border-[rgba(255,255,255,0.06)] pb-6">
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Date</span>
-                    <span class="text-lg">${Utils.formatDate(state.selections.date)}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Date</span>
+                    <span class="text-lg text-white font-medium">${Utils.formatDate(state.selections.date)}</span>
                 </div>
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Time</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Time</span>
                     <span class="text-lg text-gold font-bold">${Utils.formatTime(start)}</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Name</span>
-                    <span class="text-lg">${c.name}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Name</span>
+                    <span class="text-lg text-white">${c.name}</span>
                 </div>
                 <div>
-                    <span class="block text-sm text-gray-500 uppercase">Phone</span>
-                    <span class="text-lg">${c.phone}</span>
+                    <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Phone</span>
+                    <span class="text-lg text-white">${c.phone}</span>
                 </div>
             </div>
         </div>
-        <p class="text-sm text-gray-500 text-center mt-6">By confirming, you agree to our cancellation policy.</p>
+        <p class="text-sm text-gray-400 text-center mt-6">By confirming, you agree to our cancellation policy.</p>
     `;
     container.innerHTML = html;
 }

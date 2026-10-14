@@ -162,12 +162,12 @@ function renderTodayTable() {
         const statusColor = apt.status === 'Cancelled' ? 'text-red-500' : 'text-green-500';
 
         return `
-            <tr class="border-b border-charcoal hover:bg-[#151515] transition-colors">
-                <td class="p-4 whitespace-nowrap">${Utils.formatTime(apt.start_time)}</td>
-                <td class="p-4 whitespace-nowrap">${cust.name}</td>
+            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors">
+                <td class="p-4 whitespace-nowrap font-medium text-gold">${Utils.formatTime(apt.start_time)}</td>
+                <td class="p-4 whitespace-nowrap text-white font-medium">${cust.name}</td>
                 <td class="p-4 whitespace-nowrap text-gray-400">${srv.name}</td>
                 <td class="p-4 whitespace-nowrap text-gray-400">${brb.name}</td>
-                <td class="p-4 whitespace-nowrap font-medium ${statusColor}">${apt.status}</td>
+                <td class="p-4 whitespace-nowrap"><span class="neu-pill-inset ${apt.status === 'Cancelled' ? 'text-red-400' : 'text-green-400'} font-medium px-2.5 py-1 text-xs">${apt.status}</span></td>
             </tr>
         `;
     }).join('');
@@ -223,9 +223,9 @@ function renderAppointments() {
         const aptDate = new Date(apt.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         
         let statusBadge = '';
-        if (apt.status === 'Confirmed') statusBadge = '<span class="bg-green-900/30 text-green-500 border border-green-900/50 px-2 py-1 rounded text-xs">Confirmed</span>';
-        else if (apt.status === 'Cancelled') statusBadge = '<span class="bg-red-900/30 text-red-500 border border-red-900/50 px-2 py-1 rounded text-xs">Cancelled</span>';
-        else statusBadge = `<span class="bg-gray-800 text-gray-400 px-2 py-1 rounded text-xs">${apt.status}</span>`;
+        if (apt.status === 'Confirmed') statusBadge = '<span class="neu-pill-inset text-green-400 font-semibold px-2.5 py-1 text-xs">Confirmed</span>';
+        else if (apt.status === 'Cancelled') statusBadge = '<span class="neu-pill-inset text-red-400 font-semibold px-2.5 py-1 text-xs">Cancelled</span>';
+        else statusBadge = `<span class="neu-pill-inset text-gray-400 font-medium px-2.5 py-1 text-xs">${apt.status}</span>`;
 
         let actionBtns = '';
         if (apt.status !== 'Cancelled') {
@@ -233,19 +233,19 @@ function renderAppointments() {
         }
 
         return `
-            <tr class="border-b border-charcoal hover:bg-[#151515] transition-colors">
+            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors">
                 <td class="p-4 whitespace-nowrap text-gray-500 text-xs font-mono">${apt.id.substring(0,8)}</td>
                 <td class="p-4 whitespace-nowrap">
-                    <div class="font-medium">${aptDate}</div>
-                    <div class="text-gray-400 text-xs">${Utils.formatTime(apt.start_time)} - ${Utils.formatTime(apt.end_time)}</div>
+                    <div class="font-medium text-white">${aptDate}</div>
+                    <div class="text-gold text-xs font-medium">${Utils.formatTime(apt.start_time)} - ${Utils.formatTime(apt.end_time)}</div>
                 </td>
                 <td class="p-4">
-                    <div class="font-medium">${cust.name}</div>
-                    <div class="text-gray-500 text-xs">${cust.phone || ''}</div>
+                    <div class="font-medium text-white">${cust.name}</div>
+                    <div class="text-gray-400 text-xs">${cust.phone || ''}</div>
                 </td>
                 <td class="p-4">
-                    <div class="font-medium text-gray-300">${srv.name}</div>
-                    <div class="text-gray-500 text-xs">with ${brb.name}</div>
+                    <div class="font-medium text-gray-200">${srv.name}</div>
+                    <div class="text-gray-400 text-xs">with ${brb.name}</div>
                 </td>
                 <td class="p-4 whitespace-nowrap">${statusBadge}</td>
                 <td class="p-4 whitespace-nowrap">${actionBtns}</td>
@@ -277,19 +277,21 @@ function renderBarbers() {
     grid.classList.remove('hidden');
 
     grid.innerHTML = allBarbers.map(barber => `
-        <div class="bg-[#111111] border border-charcoal rounded-lg p-6 relative">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h4 class="playfair text-xl font-bold">${barber.name}</h4>
-                    <p class="text-xs text-gold uppercase tracking-wider">${barber.experience} | ${barber.specialty}</p>
+        <div class="neu-card p-6 relative flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h4 class="playfair text-xl font-bold text-white">${barber.name}</h4>
+                        <p class="text-xs text-gold uppercase tracking-wider font-semibold mt-1">${barber.experience} | ${barber.specialty}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick='editBarber(${JSON.stringify(barber).replace(/'/g, "&#39;")})' class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-gold transition-colors"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="deleteBarber('${barber.id}')" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick='editBarber(${JSON.stringify(barber).replace(/'/g, "&#39;")})' class="text-gray-400 hover:text-white"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                    <button onclick="deleteBarber('${barber.id}')" class="text-gray-400 hover:text-red-500"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                </div>
+                <div class="text-sm text-gray-400 mb-5 line-clamp-3 leading-relaxed">${barber.bio}</div>
             </div>
-            <div class="text-sm text-gray-400 mb-4 line-clamp-3">${barber.bio}</div>
-            <div class="text-xs text-gray-500 border-t border-charcoal pt-4 flex justify-between">
+            <div class="text-xs text-gray-400 border-t border-[rgba(255,255,255,0.05)] pt-4 flex justify-between">
                 <span>${barber.phone}</span>
                 <span>${barber.email}</span>
             </div>
@@ -343,19 +345,21 @@ function renderServices() {
     grid.classList.remove('hidden');
 
     grid.innerHTML = allServices.map(srv => `
-        <div class="bg-[#111111] border border-charcoal rounded-lg p-6 relative">
-            <div class="flex justify-between items-start mb-2">
-                <h4 class="playfair text-xl font-bold">${srv.name}</h4>
-                <div class="flex gap-2">
-                    <button onclick='editService(${JSON.stringify(srv).replace(/'/g, "&#39;")})' class="text-gray-400 hover:text-white"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                    <button onclick="deleteService('${srv.id}')" class="text-gray-400 hover:text-red-500"><i data-lucide="trash" class="w-4 h-4"></i></button>
+        <div class="neu-card p-6 relative flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="playfair text-xl font-bold text-white">${srv.name}</h4>
+                    <div class="flex gap-2">
+                        <button onclick='editService(${JSON.stringify(srv).replace(/'/g, "&#39;")})' class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-gold transition-colors"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="deleteService('${srv.id}')" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                    </div>
                 </div>
+                <span class="neu-pill-inset text-xs text-gold uppercase tracking-wider font-semibold mb-3 inline-block">${srv.category}</span>
+                <p class="text-gray-400 text-sm mb-5 leading-relaxed">${srv.description}</p>
             </div>
-            <span class="text-xs bg-charcoal border border-gray-800 px-2 py-1 rounded mb-4 inline-block">${srv.category}</span>
-            <p class="text-gray-400 text-sm mb-4">${srv.description}</p>
-            <div class="flex justify-between items-center pt-4 border-t border-charcoal">
-                <span class="text-gold font-bold">${Utils.formatCurrency(srv.price)}</span>
-                <span class="text-xs text-gray-500">${srv.duration_minutes} min</span>
+            <div class="flex justify-between items-center pt-4 border-t border-[rgba(255,255,255,0.05)]">
+                <span class="text-gold font-bold text-lg">${Utils.formatCurrency(srv.price)}</span>
+                <span class="text-xs text-gray-400 font-medium">${srv.duration_minutes} min</span>
             </div>
         </div>
     `).join('');

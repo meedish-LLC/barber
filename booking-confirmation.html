@@ -8,58 +8,56 @@
     <script src="https://unpkg.com/lucide@latest" defer></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-charcoal text-white pt-20 flex flex-col h-screen">
+<body class="bg-[#15171e] text-white pt-20 flex flex-col h-screen">
 
-    <nav class="fixed top-0 w-full z-50 bg-[#0B0B0B]/90 backdrop-blur-sm border-b border-charcoal no-print">
+    <nav class="fixed top-0 w-full z-50 neu-nav no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="index.html" class="playfair text-2xl font-bold tracking-widest text-white uppercase" id="nav-brand">Premium BARBERSHOP</a>
+                    <a href="index.html" class="playfair text-2xl font-bold tracking-widest text-white uppercase hover:text-gold transition-colors" id="nav-brand">Premium BARBERSHOP</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="flex-grow flex items-center justify-center p-4">
-        <div class="bg-[#111111] border border-charcoal rounded-xl p-8 md:p-12 max-w-2xl w-full text-center relative overflow-hidden">
+        <div class="neu-card p-8 md:p-12 max-w-2xl w-full text-center relative overflow-hidden">
             
-            <div class="absolute top-0 left-0 w-full h-2 bg-gold"></div>
-            
-            <div class="w-20 h-20 bg-green-500/10 border border-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i data-lucide="check" class="w-10 h-10"></i>
+            <div class="w-20 h-20 neu-circle flex items-center justify-center mx-auto mb-6 text-green-400 border border-green-500/30">
+                <i data-lucide="check" class="w-10 h-10 stroke-[2.5]"></i>
             </div>
 
             <h1 class="playfair text-4xl font-bold mb-2">Booking Confirmed</h1>
             <p class="text-gray-400 mb-8">Your appointment has been successfully booked.</p>
 
-            <div class="bg-[#151515] rounded-lg p-6 text-left mb-8 border border-charcoal" id="print-area">
-                <div class="text-center mb-6 border-b border-charcoal pb-6">
-                    <span class="block text-sm text-gray-500 uppercase tracking-wider mb-1">Booking Reference</span>
+            <div class="neu-inset rounded-2xl p-6 md:p-8 text-left mb-8 border border-[rgba(255,255,255,0.04)]" id="print-area">
+                <div class="text-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-6">
+                    <span class="block text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">Booking Reference</span>
                     <span class="text-3xl font-mono text-gold font-bold tracking-widest" id="conf-ref">...</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-y-6 gap-x-4">
                     <div>
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Service</span>
-                        <span class="font-bold text-lg" id="conf-service">...</span>
+                        <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Service</span>
+                        <span class="font-bold text-lg text-white" id="conf-service">...</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Barber</span>
-                        <span class="font-bold text-lg" id="conf-barber">...</span>
+                        <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Barber</span>
+                        <span class="font-bold text-lg text-white" id="conf-barber">...</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Date</span>
-                        <span class="font-bold text-lg" id="conf-date">...</span>
+                        <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Date</span>
+                        <span class="font-bold text-lg text-white" id="conf-date">...</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Time</span>
+                        <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Time</span>
                         <span class="font-bold text-lg text-gold" id="conf-time">...</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-center mt-6 no-print">
-                <a href="index.html" class="btn-primary flex items-center justify-center w-full max-w-sm"><i data-lucide="home" class="w-4 h-4 mr-2"></i> BACK HOME</a>
+                <a href="index.html" class="btn-primary flex items-center justify-center w-full max-w-sm py-3.5"><i data-lucide="home" class="w-4 h-4 mr-2"></i> BACK HOME</a>
             </div>
 
         </div>
