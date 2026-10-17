@@ -15,18 +15,23 @@ const Utils = {
     formatTime: (timeString) => {
         if (!timeString) return '';
         let str = String(timeString).trim();
-        let h = 0, m = '00';
+        let hours = 0, m = '00';
         if (str.includes('T')) {
-            const timePart = str.split('T')[1].split('.')[0];
-            const parts = timePart.split(':');
-            h = parseInt(parts[0], 10);
-            m = (parts[1] || '00').substring(0, 2);
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                hours = d.getHours();
+                m = String(d.getMinutes()).padStart(2, '0');
+            } else {
+                const parts = str.split('T')[1].split(':');
+                hours = parseInt(parts[0], 10);
+                m = (parts[1] || '00').substring(0, 2);
+            }
         } else {
             const parts = str.split(':');
-            h = parseInt(parts[0], 10);
+            hours = parseInt(parts[0], 10);
             m = (parts[1] || '00').substring(0, 2);
         }
-        let hours = isNaN(h) ? 0 : h;
+        if (isNaN(hours)) hours = 0;
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12; 

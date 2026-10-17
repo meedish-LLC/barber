@@ -99,8 +99,8 @@ function renderDashboard() {
 }
 
 function calculateStats() {
+    const todayStr = getTodayStr();
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
     const month = now.getMonth();
     const year = now.getFullYear();
     
@@ -109,19 +109,19 @@ function calculateStats() {
     let completedCount = 0;
     let revenue = 0;
 
-    const sevenDaysLater = new Date(now);
-    sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
-    const sevenDaysStr = sevenDaysLater.toISOString().split('T')[0];
+    const sevenDaysLaterStr = addDays(todayStr, 7);
 
     allAppointments.forEach(apt => {
-        const aptDate = new Date(apt.date);
+        const aptDateStr = normalizeDateStr(apt.date, apt.booking_reference);
+        const aptParts = aptDateStr ? aptDateStr.split('-').map(Number) : [];
+        const aptDate = aptParts.length === 3 ? new Date(aptParts[0], aptParts[1] - 1, aptParts[2]) : new Date(apt.date);
         const aptMonth = aptDate.getMonth();
         const aptYear = aptDate.getFullYear();
 
         if (apt.status !== 'Cancelled') {
-            if (apt.date === todayStr) todayCount++;
+            if (aptDateStr === todayStr) todayCount++;
             
-            if (apt.date > todayStr && apt.date <= sevenDaysStr) {
+            if (aptDateStr > todayStr && aptDateStr <= sevenDaysLaterStr) {
                 upcomingCount++;
             }
 
@@ -141,13 +141,14 @@ function calculateStats() {
 }
 
 function renderTodayTable() {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getTodayStr();
     
-    const todayApts = allAppointments.filter(a => a.date === todayStr).sort((a,b) => {
-        return a.start_time.localeCompare(b.start_time);
+    const todayApts = allAppointments.filter(a => normalizeDateStr(a.date, a.booking_reference) === todayStr).sort((a,b) => {
+        return (parseTimeToMinutes(a.start_time) || 0) - (parseTimeToMinutes(b.start_time) || 0);
     });
 
     const tbody = document.getElementById('today-table-body');
+    if (!tbody) return;
     
     if (todayApts.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No appointments today.</td></tr>';
@@ -155,11 +156,9 @@ function renderTodayTable() {
     }
 
     tbody.innerHTML = todayApts.map(apt => {
-        const srv = allServices.find(s => s.id === apt.service_id) || {name: 'Unknown'};
-        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Unknown'};
-        const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: 'Unknown'};
-        
-        const statusColor = apt.status === 'Cancelled' ? 'text-red-500' : 'text-green-500';
+        const srv = allServices.find(s => s.id === apt.service_id) || {name: apt.service_name || 'Unknown'};
+        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: apt.barber_name || 'Barber'};
+        const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: apt.customer_name || 'Customer'};
 
         return `
             <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors">
@@ -174,17 +173,36 @@ function renderTodayTable() {
 }
 
 
-// --- APPOINTMENTS & SANCTUARY SUITE TIMELINE ---
-let currentTimelineDate = new Date().toISOString().split('T')[0];
+// --- APPOINTMENTS & BARBERS TIMELINE ---
+function getTodayStr() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function addDays(dateStr, days) {
+    if (!dateStr) return getTodayStr();
+    const parts = dateStr.split('-').map(Number);
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    date.setDate(date.getDate() + days);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+let currentTimelineDate = getTodayStr();
 let currentViewMode = 'timeline'; // 'timeline' or 'table'
 let currentActiveApt = null;
 
 let timelineConfig = {
     startHour: 9,
-    endHour: 16,
+    endHour: 18,
     hourWidth: 155, // pixels per hour
-    showTurnover: true,
-    demoMode: true // default to showing the screenshot's sample view if day has no appointments
+    showTurnover: false,
+    demoMode: false // false by default so real appointments are always displayed!
 };
 
 const DEFAULT_BARBERS = [
@@ -406,7 +424,10 @@ function parseTimeToMinutes(timeVal) {
     if (!timeVal) return null;
     let str = String(timeVal).trim();
     if (str.includes('T')) {
-        str = str.split('T')[1].split('.')[0];
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+            return d.getHours() * 60 + d.getMinutes();
+        }
     }
     const parts = str.split(':');
     if (parts.length >= 2) {
@@ -425,11 +446,30 @@ function normalizeTime24(timeVal) {
     return `${h}:${m}`;
 }
 
-function normalizeDateStr(dateVal) {
+function normalizeDateStr(dateVal, bookingRef = '') {
+    // 1. Check booking reference format BS-YYYYMMDD-XXXX (most authoritative!)
+    if (bookingRef && /^BS-(\d{4})(\d{2})(\d{2})-/i.test(bookingRef)) {
+        const match = bookingRef.match(/^BS-(\d{4})(\d{2})(\d{2})-/i);
+        if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+    }
     if (!dateVal) return '';
-    if (dateVal instanceof Date) return dateVal.toISOString().split('T')[0];
+    if (dateVal instanceof Date) {
+        const y = dateVal.getFullYear();
+        const m = String(dateVal.getMonth() + 1).padStart(2, '0');
+        const d = String(dateVal.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
     let str = String(dateVal).trim();
-    if (str.includes('T')) return str.split('T')[0];
+    if (str.includes('T')) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
     return str;
 }
 
@@ -439,17 +479,17 @@ function setupFilters() {
     if (dateInput) {
         dateInput.value = currentTimelineDate;
         dateInput.addEventListener('change', (e) => {
-            currentTimelineDate = e.target.value;
-            renderAppointments();
+            if (e.target.value) {
+                currentTimelineDate = e.target.value;
+                renderAppointments();
+            }
         });
     }
 
     const prevBtn = document.getElementById('btn-date-prev');
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
-            const d = new Date(currentTimelineDate + 'T00:00:00');
-            d.setDate(d.getDate() - 1);
-            currentTimelineDate = d.toISOString().split('T')[0];
+            currentTimelineDate = addDays(currentTimelineDate, -1);
             renderAppointments();
         });
     }
@@ -457,9 +497,7 @@ function setupFilters() {
     const nextBtn = document.getElementById('btn-date-next');
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            const d = new Date(currentTimelineDate + 'T00:00:00');
-            d.setDate(d.getDate() + 1);
-            currentTimelineDate = d.toISOString().split('T')[0];
+            currentTimelineDate = addDays(currentTimelineDate, 1);
             renderAppointments();
         });
     }
@@ -467,7 +505,7 @@ function setupFilters() {
     const todayBtn = document.getElementById('btn-date-today');
     if (todayBtn) {
         todayBtn.addEventListener('click', () => {
-            currentTimelineDate = new Date().toISOString().split('T')[0];
+            currentTimelineDate = getTodayStr();
             renderAppointments();
         });
     }
@@ -481,7 +519,7 @@ function setupFilters() {
     const clearBtn = document.getElementById('btn-clear-filters');
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-            currentTimelineDate = new Date().toISOString().split('T')[0];
+            currentTimelineDate = getTodayStr();
             if (statusSelect) statusSelect.value = 'all';
             timelineConfig.demoMode = false;
             renderAppointments();
@@ -537,6 +575,62 @@ function getActiveBarbers() {
     return DEFAULT_BARBERS;
 }
 
+window.jumpToDate = (targetDate) => {
+    currentTimelineDate = targetDate;
+    renderAppointments();
+};
+
+function renderQuickDateChips() {
+    const container = document.getElementById('booking-quick-chips');
+    if (!container) return;
+
+    // Find all unique dates with appointments
+    const dateCounts = {};
+    allAppointments.forEach(apt => {
+        if (apt.status !== 'Cancelled') {
+            const d = normalizeDateStr(apt.date, apt.booking_reference);
+            if (d) {
+                dateCounts[d] = (dateCounts[d] || 0) + 1;
+            }
+        }
+    });
+
+    const dates = Object.keys(dateCounts).sort();
+    if (dates.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let chipsHtml = `
+        <span class="text-xs text-gray-400 flex items-center gap-1 font-medium mr-1 py-1">
+            <i data-lucide="calendar-check" class="w-3.5 h-3.5 text-gold"></i>
+            Dates with Bookings:
+        </span>
+    `;
+
+    dates.forEach(dStr => {
+        const parts = dStr.split('-').map(Number);
+        const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
+        const label = dObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const count = dateCounts[dStr];
+        const isSelected = dStr === currentTimelineDate;
+
+        chipsHtml += `
+            <button onclick="jumpToDate('${dStr}')" 
+                    class="py-1 px-3 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        isSelected 
+                        ? 'bg-[#C9A227] text-black shadow-md ring-2 ring-gold/40' 
+                        : 'bg-[#1a1d27] text-gray-300 hover:text-white hover:bg-[#252836] border border-[rgba(255,255,255,0.08)]'
+                    }">
+                <span>${label}</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-black/25 text-black' : 'bg-[#C9A227]/25 text-gold font-bold'}">${count}</span>
+            </button>
+        `;
+    });
+
+    container.innerHTML = chipsHtml;
+}
+
 function renderAppointments() {
     document.getElementById('appointments-loading').classList.add('hidden');
 
@@ -546,11 +640,13 @@ function renderAppointments() {
 
     const dateDisplay = document.getElementById('current-date-display');
     if (dateDisplay) {
-        const dObj = new Date(currentTimelineDate + 'T00:00:00');
+        const parts = currentTimelineDate.split('-').map(Number);
+        const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
         dateDisplay.textContent = dObj.toLocaleDateString('en-US', {
             weekday: 'short',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
+            year: 'numeric'
         });
     }
 
@@ -558,16 +654,19 @@ function renderAppointments() {
     const statusFilter = document.getElementById('filter-status')?.value || 'all';
 
     let dayApts = allAppointments.filter(apt => {
-        return normalizeDateStr(apt.date) === currentTimelineDate;
+        return normalizeDateStr(apt.date, apt.booking_reference) === currentTimelineDate;
     });
 
     if (statusFilter !== 'all') {
         dayApts = dayApts.filter(apt => (apt.status || 'Confirmed') === statusFilter);
     }
 
-    // If demo mode is on OR there are no appointments for the day, show demo reference data
-    const useDemo = timelineConfig.demoMode && dayApts.length === 0;
+    // ONLY use demo if demoMode is explicitly enabled by the user in Parameters
+    const useDemo = Boolean(timelineConfig.demoMode);
     const activeApts = useDemo ? SCREENSHOT_DEMO_APTS : dayApts;
+
+    // Render quick-jump chips for dates with bookings
+    renderQuickDateChips();
 
     // Render Timeline View
     renderTimelineView(activeApts, useDemo);
@@ -617,9 +716,9 @@ function renderTimelineView(appointments, isDemo = false) {
     `;
 
     // Calculate current time line if viewing today
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = getTodayStr();
     const isToday = currentTimelineDate === todayStr;
+    const now = new Date();
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
     let nowLineHtml = '';
 
@@ -632,11 +731,26 @@ function renderTimelineView(appointments, isDemo = false) {
         `;
     }
 
+    // Helper banner if no appointments on this date
+    if (!isDemo && appointments.length === 0) {
+        html += `
+            <div class="px-4 py-2 bg-[#f2efe9] border-b border-[#ebe7df] text-xs text-[#78716c] flex items-center justify-between">
+                <span class="flex items-center gap-1.5 font-medium">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#8c8275]"></i>
+                    <span>No appointments scheduled for this date. Click any barber lane to add a booking.</span>
+                </span>
+            </div>
+        `;
+    }
+
     // Render Each Barber Row
     barbers.forEach((barber, idx) => {
         // Find appointments for this barber
         const barberApts = appointments.filter(apt => {
-            return String(apt.barber_id) === String(barber.id);
+            if (!apt.barber_id) return false;
+            const aId = String(apt.barber_id).trim().toLowerCase();
+            const bId = String(barber.id).trim().toLowerCase();
+            return aId === bId || aId === bId.replace('barber_', '') || aId.replace('barber_', '') === bId;
         });
 
         html += `
