@@ -431,24 +431,27 @@
     </div>
 
     <!-- Appointment Detail Modal -->
-    <div id="apt-detail-modal" class="modal-overlay fixed inset-0 z-50 flex justify-center items-center">
+    <div id="apt-detail-modal" class="modal-overlay fixed inset-0 z-50 flex justify-center items-center" onclick="if(event.target === this) closeAptDetailModal()">
         <div class="modal-content w-full max-w-lg p-6 relative">
             <div class="flex justify-between items-start border-b border-[rgba(255,255,255,0.06)] pb-4 mb-5">
                 <div>
-                    <span id="modal-apt-ref" class="neu-pill-inset text-[11px] font-mono text-gold px-2.5 py-1">BS-XXXXX</span>
+                    <div class="flex items-center gap-2">
+                        <span id="modal-apt-ref" class="neu-pill-inset text-[11px] font-mono text-gold px-2.5 py-1">BS-XXXXX</span>
+                        <span id="modal-apt-status-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Confirmed</span>
+                    </div>
                     <h3 class="playfair text-xl font-bold text-white mt-2" id="modal-apt-customer">Customer Name</h3>
                 </div>
-                <button onclick="closeAptDetailModal()" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-white">
+                <button onclick="closeAptDetailModal()" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-white cursor-pointer" title="Close">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
 
             <!-- Details Body -->
             <div class="space-y-4 text-sm text-gray-300">
-                <div class="grid grid-cols-2 gap-4 bg-[#111319] p-3.5 rounded-xl border border-[rgba(255,255,255,0.04)]">
+                <div class="grid grid-cols-2 gap-3.5 bg-[#111319] p-3.5 rounded-xl border border-[rgba(255,255,255,0.04)]">
                     <div>
                         <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Service</span>
-                        <span class="font-semibold text-white mt-0.5 block" id="modal-apt-service">24K Sculpting</span>
+                        <span class="font-semibold text-white mt-0.5 block" id="modal-apt-service">Service Name</span>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Price</span>
@@ -456,7 +459,10 @@
                     </div>
                     <div>
                         <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Barber</span>
-                        <span class="font-medium text-gray-200 mt-0.5 block" id="modal-apt-barber">John Carter</span>
+                        <span class="font-medium text-gray-200 mt-0.5 block flex items-center gap-1.5" id="modal-apt-barber">
+                            <i data-lucide="scissors" class="w-3.5 h-3.5 text-gold"></i>
+                            <span>Barber</span>
+                        </span>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Time Window</span>
@@ -464,7 +470,7 @@
                     </div>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-2 bg-[#14161f] p-3.5 rounded-xl border border-[rgba(255,255,255,0.04)]">
                     <div class="flex justify-between py-1 border-b border-[rgba(255,255,255,0.04)]">
                         <span class="text-xs text-gray-400">Date</span>
                         <span class="text-xs font-medium text-white" id="modal-apt-date">Oct 17, 2026</span>
@@ -477,41 +483,41 @@
                         <span class="text-xs text-gray-400">Email</span>
                         <span class="text-xs font-medium text-white" id="modal-apt-email">--</span>
                     </div>
-                    <div id="modal-apt-notes-container" class="py-1">
+                    <div id="modal-apt-notes-container" class="pt-2">
                         <span class="text-xs text-gray-400 block mb-1">Notes / Preferences</span>
-                        <p class="text-xs text-gray-300 italic bg-[#111319] p-2.5 rounded-lg border border-[rgba(255,255,255,0.04)]" id="modal-apt-notes">None</p>
+                        <p class="text-xs text-gray-300 italic bg-[#0d0f14] p-2.5 rounded-lg border border-[rgba(255,255,255,0.04)]" id="modal-apt-notes">None</p>
                     </div>
                 </div>
 
                 <!-- Status Selector -->
-                <div class="pt-2">
+                <div class="pt-1">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Update Status</label>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="modal-status-buttons">
-                        <button onclick="setAppointmentStatus('Active Protocol')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#15161a] border border-amber-600/50 text-amber-400 hover:bg-[#202228] transition-colors flex items-center justify-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Active Protocol
+                        <button onclick="setAppointmentStatus('In Protocol')" data-status="In Protocol" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-amber-600/40 text-amber-400 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> In Protocol
                         </button>
-                        <button onclick="setAppointmentStatus('Confirmed')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-stone-300"></span> Confirmed
+                        <button onclick="setAppointmentStatus('Confirmed')" data-status="Confirmed" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-transparent text-gray-200 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Confirmed
                         </button>
-                        <button onclick="setAppointmentStatus('Arrived Lounge')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                        <button onclick="setAppointmentStatus('Arrived Lounge')" data-status="Arrived Lounge" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-transparent text-gray-200 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
                             <span class="w-2 h-2 rounded-full bg-amber-200"></span> Arrived Lounge
                         </button>
-                        <button onclick="setAppointmentStatus('Starting Soon')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                        <button onclick="setAppointmentStatus('Starting Soon')" data-status="Starting Soon" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-transparent text-gray-200 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
                             <span class="w-2 h-2 rounded-full bg-yellow-400"></span> Starting Soon
                         </button>
-                        <button onclick="setAppointmentStatus('Completed')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                        <button onclick="setAppointmentStatus('Completed')" data-status="Completed" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-transparent text-green-300 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
                             <span class="w-2 h-2 rounded-full bg-green-400"></span> Completed
                         </button>
-                        <button onclick="setAppointmentStatus('Cancelled')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-red-400 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                        <button onclick="setAppointmentStatus('Cancelled')" data-status="Cancelled" class="status-btn py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#1a1d27] border border-transparent text-red-400 hover:bg-[#252836] transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
                             <span class="w-2 h-2 rounded-full bg-red-400"></span> Cancelled
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center gap-3 mt-6 pt-5 border-t border-[rgba(255,255,255,0.06)]">
-                <button type="button" id="modal-apt-cancel-btn" onclick="cancelCurrentApt()" class="text-xs text-red-400 hover:text-red-300 underline font-medium">Cancel Appointment</button>
-                <button type="button" class="btn-outline text-xs py-2 px-5" onclick="closeAptDetailModal()">Close</button>
+            <div class="flex justify-between items-center gap-3 mt-6 pt-4 border-t border-[rgba(255,255,255,0.06)]">
+                <button type="button" id="modal-apt-cancel-btn" onclick="cancelCurrentApt()" class="text-xs text-red-400 hover:text-red-300 underline font-medium cursor-pointer">Cancel Appointment</button>
+                <button type="button" class="btn-outline text-xs py-2 px-5 cursor-pointer" onclick="closeAptDetailModal()">Close</button>
             </div>
         </div>
     </div>

@@ -18,6 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Event Listeners for Forms
     setupForms();
     setupFilters();
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAptDetailModal();
+        }
+    });
 });
 
 function setupTabs() {
@@ -156,12 +163,13 @@ function renderTodayTable() {
     }
 
     tbody.innerHTML = todayApts.map(apt => {
+        const aptKey = registerAppointment(apt);
         const srv = allServices.find(s => s.id === apt.service_id) || {name: apt.service_name || 'Unknown'};
         const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: apt.barber_name || 'Barber'};
         const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: apt.customer_name || 'Customer'};
 
         return `
-            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors">
+            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors cursor-pointer" onclick="showAppointmentDetail('${aptKey}')">
                 <td class="p-4 whitespace-nowrap font-medium text-gold">${Utils.formatTime(apt.start_time)}</td>
                 <td class="p-4 whitespace-nowrap text-white font-medium">${cust.name}</td>
                 <td class="p-4 whitespace-nowrap text-gray-400">${srv.name}</td>
@@ -580,6 +588,26 @@ window.jumpToDate = (targetDate) => {
     renderAppointments();
 };
 
+let renderedAppointmentsMap = {};
+
+function registerAppointment(apt) {
+    if (!apt) return '';
+    const key = 'apt_' + (apt.id || apt.booking_reference || Math.random().toString(36).substring(2, 9));
+    renderedAppointmentsMap[key] = apt;
+    return key;
+}
+
+window.showAppointmentDetail = (key) => {
+    let apt = renderedAppointmentsMap[key];
+    if (!apt) {
+        apt = allAppointments.find(a => String(a.id) === String(key) || String(a.booking_reference) === String(key))
+           || SCREENSHOT_DEMO_APTS.find(a => String(a.id) === String(key) || String(a.booking_reference) === String(key));
+    }
+    if (apt) {
+        openAptDetailModal(apt);
+    }
+};
+
 function renderQuickDateChips() {
     const container = document.getElementById('booking-quick-chips');
     if (!container) return;
@@ -633,6 +661,7 @@ function renderQuickDateChips() {
 
 function renderAppointments() {
     document.getElementById('appointments-loading').classList.add('hidden');
+    renderedAppointmentsMap = {};
 
     // Update Date Display
     const dateInput = document.getElementById('filter-date');
@@ -886,12 +915,12 @@ function renderSanctuaryCard(apt, startMinutesOfDay, hourWidth) {
         `;
     }
 
-    const aptJson = JSON.stringify(apt).replace(/'/g, "&#39;");
+    const aptKey = registerAppointment(apt);
 
     return `
         <div class="sanctuary-card ${cardClass}" 
              style="left: ${left}px; width: ${width}px;" 
-             onclick="event.stopPropagation(); openAptDetailModal(${aptJson})"
+             onclick="event.stopPropagation(); showAppointmentDetail('${aptKey}')"
              title="${custName} - ${srvName} (${timeDisplay})">
             ${statusBadge}
             <div class="card-client font-bold text-xs sm:text-sm truncate leading-tight">
@@ -905,6 +934,10 @@ function renderSanctuaryCard(apt, startMinutesOfDay, hourWidth) {
 }
 
 function handleLaneClick(event, barberId) {
+    // If the click originated from an appointment card, do not open booking modal
+    if (event.target.closest('.sanctuary-card')) {
+        return;
+    }
     const laneRect = event.currentTarget.getBoundingClientRect();
     const clickX = event.clientX - laneRect.left;
     const { startHour, hourWidth } = timelineConfig;
@@ -924,19 +957,20 @@ function renderTableView(dayApts) {
     }
 
     tbody.innerHTML = dayApts.map(apt => {
+        const aptKey = registerAppointment(apt);
         const srv = allServices.find(s => s.id === apt.service_id) || {name: apt.service_name || 'Service'};
         const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Barber'};
         const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: apt.customer_name || 'Customer', email: '', phone: ''};
         
-        const aptDate = new Date(normalizeDateStr(apt.date) + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const aptDate = new Date(normalizeDateStr(apt.date, apt.booking_reference) + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         
         let statusBadge = `<span class="neu-pill-inset text-gray-300 font-medium px-2.5 py-1 text-xs">${apt.status || 'Confirmed'}</span>`;
-        if (apt.status === 'Active Protocol') statusBadge = '<span class="neu-pill-inset text-amber-400 font-semibold px-2.5 py-1 text-xs">Active Protocol</span>';
-        else if (apt.status === 'Confirmed') statusBadge = '<span class="neu-pill-inset text-green-400 font-semibold px-2.5 py-1 text-xs">Confirmed</span>';
+        if (apt.status === 'Active Protocol' || apt.status === 'In Protocol') statusBadge = '<span class="neu-pill-inset text-amber-400 font-semibold px-2.5 py-1 text-xs">In Protocol</span>';
+        else if (apt.status === 'Confirmed') statusBadge = '<span class="neu-pill-inset text-emerald-400 font-semibold px-2.5 py-1 text-xs">Confirmed</span>';
         else if (apt.status === 'Cancelled') statusBadge = '<span class="neu-pill-inset text-red-400 font-semibold px-2.5 py-1 text-xs">Cancelled</span>';
 
         return `
-            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors cursor-pointer" onclick='openAptDetailModal(${JSON.stringify(apt).replace(/'/g, "&#39;")})'>
+            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors cursor-pointer" onclick="showAppointmentDetail('${aptKey}')">
                 <td class="p-4 whitespace-nowrap text-gray-500 text-xs font-mono">${(apt.booking_reference || apt.id || '').substring(0, 12)}</td>
                 <td class="p-4 whitespace-nowrap">
                     <div class="font-medium text-white">${aptDate}</div>
@@ -961,29 +995,116 @@ function renderTableView(dayApts) {
 
 // Appointment Detail Modal Handlers
 window.openAptDetailModal = (apt) => {
+    if (!apt) return;
     currentActiveApt = apt;
-    const cust = allCustomers.find(c => c.id === apt.customer_id) || {};
-    const srv = allServices.find(s => s.id === apt.service_id) || {};
-    const brb = allBarbers.find(b => b.id === apt.barber_id) || {};
+    const cust = allCustomers.find(c => String(c.id).trim() === String(apt.customer_id).trim()) || {};
+    const srv = allServices.find(s => String(s.id).trim() === String(apt.service_id).trim()) || {};
+    const activeBarbers = getActiveBarbers();
+    const brb = activeBarbers.find(b => {
+        const bId = String(b.id).trim().toLowerCase();
+        const aId = String(apt.barber_id || '').trim().toLowerCase();
+        return bId === aId || bId === aId.replace('barber_', '') || bId.replace('barber_', '') === aId;
+    }) || allBarbers.find(b => {
+        const bId = String(b.id).trim().toLowerCase();
+        const aId = String(apt.barber_id || '').trim().toLowerCase();
+        return bId === aId || bId === aId.replace('barber_', '') || bId.replace('barber_', '') === aId;
+    }) || {};
 
     const custName = apt.customer_name || cust.name || 'Valued Guest';
-    const custPhone = apt.phone || cust.phone || 'Not provided';
-    const custEmail = apt.email || cust.email || 'Not provided';
+    const custPhone = apt.phone || apt.customer_phone || cust.phone || 'Not provided';
+    const custEmail = apt.email || apt.customer_email || cust.email || 'Not provided';
     const srvName = apt.service_name || srv.name || 'Treatment';
-    const price = apt.price || srv.price || 0;
-    const notes = apt.customer_notes || 'None';
+    const price = apt.price !== undefined ? apt.price : (srv.price || 0);
+    const notes = apt.customer_notes || apt.notes || 'None';
     const timeDisplay = `${normalizeTime24(apt.start_time)} - ${normalizeTime24(apt.end_time)}`;
+    const status = apt.status || 'Confirmed';
 
-    document.getElementById('modal-apt-ref').textContent = apt.booking_reference || apt.id || 'BARBER';
-    document.getElementById('modal-apt-customer').textContent = custName;
-    document.getElementById('modal-apt-service').textContent = srvName;
-    document.getElementById('modal-apt-price').textContent = Utils.formatCurrency(price);
-    document.getElementById('modal-apt-barber').textContent = brb.name || apt.barber_name || 'Barber';
-    document.getElementById('modal-apt-time').textContent = timeDisplay;
-    document.getElementById('modal-apt-date').textContent = normalizeDateStr(apt.date) || currentTimelineDate;
-    document.getElementById('modal-apt-phone').textContent = custPhone;
-    document.getElementById('modal-apt-email').textContent = custEmail;
-    document.getElementById('modal-apt-notes').textContent = notes;
+    const dateStr = normalizeDateStr(apt.date, apt.booking_reference) || currentTimelineDate;
+    let formattedDate = dateStr;
+    if (dateStr) {
+        const parts = dateStr.split('-').map(Number);
+        if (parts.length === 3) {
+            const dObj = new Date(parts[0], parts[1] - 1, parts[2]);
+            formattedDate = dObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    }
+
+    const refEl = document.getElementById('modal-apt-ref');
+    if (refEl) refEl.textContent = apt.booking_reference || apt.id || 'BARBER';
+
+    const statusBadgeEl = document.getElementById('modal-apt-status-badge');
+    if (statusBadgeEl) {
+        statusBadgeEl.textContent = status;
+        if (status === 'Active Protocol' || status === 'In Protocol') {
+            statusBadgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        } else if (status === 'Confirmed') {
+            statusBadgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        } else if (status === 'Completed') {
+            statusBadgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-green-500/20 text-green-300 border border-green-500/40';
+        } else if (status === 'Cancelled') {
+            statusBadgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/40';
+        } else {
+            statusBadgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-stone-500/20 text-stone-300 border border-stone-500/40';
+        }
+    }
+
+    const custEl = document.getElementById('modal-apt-customer');
+    if (custEl) custEl.textContent = custName;
+
+    const srvEl = document.getElementById('modal-apt-service');
+    if (srvEl) srvEl.textContent = srvName;
+
+    const priceEl = document.getElementById('modal-apt-price');
+    if (priceEl) priceEl.textContent = Utils.formatCurrency(price);
+
+    const barberEl = document.getElementById('modal-apt-barber');
+    if (barberEl) {
+        barberEl.innerHTML = `
+            <i data-lucide="${brb.icon || 'scissors'}" class="w-3.5 h-3.5 text-gold"></i>
+            <span>${brb.name || apt.barber_name || (apt.barber_id ? `Barber ${apt.barber_id}` : 'Master Barber')}</span>
+        `;
+    }
+
+    const timeEl = document.getElementById('modal-apt-time');
+    if (timeEl) timeEl.textContent = timeDisplay;
+
+    const dateEl = document.getElementById('modal-apt-date');
+    if (dateEl) dateEl.textContent = formattedDate;
+
+    const phoneEl = document.getElementById('modal-apt-phone');
+    if (phoneEl) {
+        if (custPhone && custPhone !== 'Not provided') {
+            phoneEl.innerHTML = `<a href="tel:${custPhone}" class="text-gold hover:underline flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i> ${custPhone}</a>`;
+        } else {
+            phoneEl.textContent = 'Not provided';
+        }
+    }
+
+    const emailEl = document.getElementById('modal-apt-email');
+    if (emailEl) {
+        if (custEmail && custEmail !== 'Not provided') {
+            emailEl.innerHTML = `<a href="mailto:${custEmail}" class="text-gold hover:underline flex items-center gap-1"><i data-lucide="mail" class="w-3 h-3"></i> ${custEmail}</a>`;
+        } else {
+            emailEl.textContent = 'Not provided';
+        }
+    }
+
+    const notesEl = document.getElementById('modal-apt-notes');
+    if (notesEl) notesEl.textContent = notes;
+
+    // Highlight current status button
+    const statusButtons = document.querySelectorAll('#modal-status-buttons .status-btn');
+    statusButtons.forEach(btn => {
+        const btnStatus = btn.getAttribute('data-status');
+        const isMatch = btnStatus === status || 
+            (status === 'Active Protocol' && btnStatus === 'In Protocol') || 
+            (status === 'In Protocol' && btnStatus === 'Active Protocol');
+        if (isMatch) {
+            btn.classList.add('ring-2', 'ring-gold', 'bg-[#252836]');
+        } else {
+            btn.classList.remove('ring-2', 'ring-gold', 'bg-[#252836]');
+        }
+    });
 
     Utils.showModal('apt-detail-modal');
     lucide.createIcons();
@@ -999,7 +1120,10 @@ window.setAppointmentStatus = async (newStatus) => {
     currentActiveApt.status = newStatus;
 
     // If it's a real appointment in allAppointments, update it
-    const realApt = allAppointments.find(a => a.id === currentActiveApt.id);
+    const realApt = allAppointments.find(a => 
+        (currentActiveApt.id && String(a.id) === String(currentActiveApt.id)) || 
+        (currentActiveApt.booking_reference && String(a.booking_reference) === String(currentActiveApt.booking_reference))
+    );
     if (realApt) {
         realApt.status = newStatus;
     }
