@@ -174,70 +174,684 @@ function renderTodayTable() {
 }
 
 
-// --- APPOINTMENTS ---
+// --- APPOINTMENTS & SANCTUARY SUITE TIMELINE ---
+let currentTimelineDate = new Date().toISOString().split('T')[0];
+let currentViewMode = 'timeline'; // 'timeline' or 'table'
+let currentActiveApt = null;
+
+let timelineConfig = {
+    startHour: 9,
+    endHour: 16,
+    hourWidth: 155, // pixels per hour
+    showTurnover: true,
+    demoMode: true // default to showing the screenshot's sample view if day has no appointments
+};
+
+const DEFAULT_SUITES = [
+    {
+        id: 'suite_1',
+        suiteNumber: '01',
+        subtitle: 'Sculptural & Botanical',
+        staffName: 'Hélène Vance',
+        staffIcon: 'clock',
+        barberId: 'barber_1'
+    },
+    {
+        id: 'suite_2',
+        suiteNumber: '02',
+        subtitle: 'Thermal Hydrotherapy',
+        staffName: 'Julian Thorne',
+        staffIcon: 'user',
+        barberId: 'barber_2'
+    },
+    {
+        id: 'suite_3',
+        suiteNumber: '03',
+        subtitle: 'Cryogenic Cellular',
+        staffName: 'Camille Roux',
+        staffIcon: 'snowflake',
+        barberId: 'barber_3'
+    },
+    {
+        id: 'suite_4',
+        suiteNumber: '04',
+        subtitle: 'Nail & Hand Atelier',
+        staffName: 'Sora Kim',
+        staffIcon: 'pen-tool',
+        barberId: 'barber_4'
+    },
+    {
+        id: 'suite_5',
+        suiteNumber: '05',
+        subtitle: 'Aromatherapy Cocoon',
+        staffName: 'Rotating Artisan',
+        staffIcon: 'bed',
+        barberId: 'barber_5'
+    }
+];
+
+// Screenshot Reference Appointments matching the user's reference image
+const SCREENSHOT_DEMO_APTS = [
+    {
+        id: 'demo_1',
+        booking_reference: 'SAN-9382-CL',
+        suite_id: 'suite_1',
+        barber_id: 'barber_1',
+        customer_name: 'Claire D. · Tl...',
+        phone: '+1 (555) 234-5678',
+        email: 'claire.d@sanctuary.com',
+        service_name: '24K Sculpting...',
+        service_id: 'srv_1',
+        price: 185,
+        status: 'Active Protocol',
+        start_time: '09:30',
+        end_time: '10:45',
+        customer_notes: 'Prefers quiet session with botanical oils.'
+    },
+    {
+        id: 'demo_2',
+        booking_reference: 'SAN-4819-EL',
+        suite_id: 'suite_1',
+        barber_id: 'barber_1',
+        customer_name: 'Eleanor Van...',
+        phone: '+1 (555) 345-6789',
+        email: 'eleanor.v@sanctuary.com',
+        service_name: 'Botanical Archi...',
+        service_id: 'srv_2',
+        price: 140,
+        status: 'Arrived Lounge',
+        start_time: '11:15',
+        end_time: '12:15',
+        customer_notes: 'Arrival notified at reception lounge.'
+    },
+    {
+        id: 'demo_3',
+        booking_reference: 'SAN-1102-GE',
+        suite_id: 'suite_1',
+        barber_id: 'barber_1',
+        customer_name: 'Genevieve ...',
+        phone: '+1 (555) 456-7890',
+        email: 'genevieve@sanctuary.com',
+        service_name: 'Cellular Sculp...',
+        service_id: 'srv_3',
+        price: 165,
+        status: 'Confirmed',
+        start_time: '14:00',
+        end_time: '15:00',
+        customer_notes: 'Confirmed via VIP portal.'
+    },
+    {
+        id: 'demo_4',
+        booking_reference: 'SAN-6201-MA',
+        suite_id: 'suite_2',
+        barber_id: 'barber_2',
+        customer_name: 'Marcus Sterli...',
+        phone: '+1 (555) 567-8901',
+        email: 'marcus.s@sanctuary.com',
+        service_name: 'Thermal Scalp & ...',
+        service_id: 'srv_4',
+        price: 155,
+        status: 'Active Protocol',
+        start_time: '10:00',
+        end_time: '11:30',
+        customer_notes: 'Thermal scalp hydrotherapy with cooling tonic.'
+    },
+    {
+        id: 'demo_5',
+        booking_reference: 'SAN-7740-AR',
+        suite_id: 'suite_2',
+        barber_id: 'barber_2',
+        customer_name: 'Aria Mo...',
+        phone: '+1 (555) 678-9012',
+        email: 'aria.m@sanctuary.com',
+        service_name: 'Oribe Alch..',
+        service_id: 'srv_2',
+        price: 120,
+        status: 'Confirmed',
+        start_time: '12:00',
+        end_time: '13:00',
+        customer_notes: ''
+    },
+    {
+        id: 'demo_turnover_2',
+        is_turnover: true,
+        suite_id: 'suite_2',
+        start_time: '13:10',
+        end_time: '13:40',
+        label: 'Ozone Turnover'
+    },
+    {
+        id: 'demo_6',
+        booking_reference: 'SAN-3392-SO',
+        suite_id: 'suite_3',
+        barber_id: 'barber_3',
+        customer_name: 'Sophia Chen',
+        phone: '+1 (555) 789-0123',
+        email: 'sophia.c@sanctuary.com',
+        service_name: 'Cryo Cellular Co...',
+        service_id: 'srv_3',
+        price: 195,
+        status: 'Active Protocol',
+        start_time: '10:15',
+        end_time: '11:45',
+        customer_notes: 'Cryotherapy facial cellular protocol.'
+    },
+    {
+        id: 'demo_7',
+        booking_reference: 'SAN-9904-VI',
+        suite_id: 'suite_3',
+        barber_id: 'barber_3',
+        customer_name: 'Victoria Be...',
+        phone: '+1 (555) 890-1234',
+        email: 'victoria.b@sanctuary.com',
+        service_name: '24K Gold Lift',
+        service_id: 'srv_1',
+        price: 175,
+        status: 'Confirmed',
+        start_time: '12:30',
+        end_time: '13:30',
+        customer_notes: ''
+    },
+    {
+        id: 'demo_8',
+        booking_reference: 'SAN-2041-LI',
+        suite_id: 'suite_4',
+        barber_id: 'barber_4',
+        customer_name: 'Lillian R...',
+        phone: '+1 (555) 901-2345',
+        email: 'lillian.r@sanctuary.com',
+        service_name: 'Japanese ...',
+        service_id: 'srv_5',
+        price: 95,
+        status: 'Completed',
+        start_time: '09:15',
+        end_time: '10:15',
+        customer_notes: 'Signature manicure atelier.'
+    },
+    {
+        id: 'demo_9',
+        booking_reference: 'SAN-5812-CH',
+        suite_id: 'suite_4',
+        barber_id: 'barber_4',
+        customer_name: 'Charlotte Du...',
+        phone: '+1 (555) 012-3456',
+        email: 'charlotte.d@sanctuary.com',
+        service_name: 'Micro-Blade & Br...',
+        service_id: 'srv_5',
+        price: 135,
+        status: 'Starting Soon',
+        start_time: '11:00',
+        end_time: '12:00',
+        customer_notes: ''
+    },
+    {
+        id: 'demo_10',
+        booking_reference: 'SAN-4401-IS',
+        suite_id: 'suite_4',
+        barber_id: 'barber_4',
+        customer_name: 'Isabelle...',
+        phone: '+1 (555) 123-7890',
+        email: 'isabelle@sanctuary.com',
+        service_name: 'Non-Toxi...',
+        service_id: 'srv_5',
+        price: 110,
+        status: 'Confirmed',
+        start_time: '13:00',
+        end_time: '14:00',
+        customer_notes: ''
+    },
+    {
+        id: 'demo_11',
+        booking_reference: 'SAN-8012-VI',
+        suite_id: 'suite_5',
+        barber_id: 'barber_5',
+        customer_name: 'VIP Member S...',
+        phone: '+1 (555) 999-8877',
+        email: 'vip.member@sanctuary.com',
+        service_name: 'Signature Sound ...',
+        service_id: 'srv_1',
+        price: 220,
+        status: 'Room Prepped',
+        start_time: '10:45',
+        end_time: '11:45',
+        customer_notes: 'Private suite sound bath preparation.'
+    }
+];
+
+function parseTimeToMinutes(timeVal) {
+    if (!timeVal) return null;
+    let str = String(timeVal).trim();
+    if (str.includes('T')) {
+        str = str.split('T')[1].split('.')[0];
+    }
+    const parts = str.split(':');
+    if (parts.length >= 2) {
+        const h = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        if (!isNaN(h) && !isNaN(m)) return h * 60 + m;
+    }
+    return null;
+}
+
+function normalizeTime24(timeVal) {
+    const mins = parseTimeToMinutes(timeVal);
+    if (mins === null) return '';
+    const h = Math.floor(mins / 60).toString().padStart(2, '0');
+    const m = (mins % 60).toString().padStart(2, '0');
+    return `${h}:${m}`;
+}
+
+function normalizeDateStr(dateVal) {
+    if (!dateVal) return '';
+    if (dateVal instanceof Date) return dateVal.toISOString().split('T')[0];
+    let str = String(dateVal).trim();
+    if (str.includes('T')) return str.split('T')[0];
+    return str;
+}
+
 function setupFilters() {
-    document.getElementById('filter-date').addEventListener('change', renderAppointments);
-    document.getElementById('filter-status').addEventListener('change', renderAppointments);
-    
-    document.getElementById('btn-clear-filters').addEventListener('click', () => {
-        document.getElementById('filter-date').value = '';
-        document.getElementById('filter-status').value = 'all';
-        renderAppointments();
+    // Date filter & navigation
+    const dateInput = document.getElementById('filter-date');
+    if (dateInput) {
+        dateInput.value = currentTimelineDate;
+        dateInput.addEventListener('change', (e) => {
+            currentTimelineDate = e.target.value;
+            renderAppointments();
+        });
+    }
+
+    const prevBtn = document.getElementById('btn-date-prev');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            const d = new Date(currentTimelineDate + 'T00:00:00');
+            d.setDate(d.getDate() - 1);
+            currentTimelineDate = d.toISOString().split('T')[0];
+            renderAppointments();
+        });
+    }
+
+    const nextBtn = document.getElementById('btn-date-next');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const d = new Date(currentTimelineDate + 'T00:00:00');
+            d.setDate(d.getDate() + 1);
+            currentTimelineDate = d.toISOString().split('T')[0];
+            renderAppointments();
+        });
+    }
+
+    const todayBtn = document.getElementById('btn-date-today');
+    if (todayBtn) {
+        todayBtn.addEventListener('click', () => {
+            currentTimelineDate = new Date().toISOString().split('T')[0];
+            renderAppointments();
+        });
+    }
+
+    // Status filter
+    const statusSelect = document.getElementById('filter-status');
+    if (statusSelect) {
+        statusSelect.addEventListener('change', renderAppointments);
+    }
+
+    const clearBtn = document.getElementById('btn-clear-filters');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            currentTimelineDate = new Date().toISOString().split('T')[0];
+            if (statusSelect) statusSelect.value = 'all';
+            timelineConfig.demoMode = false;
+            renderAppointments();
+        });
+    }
+
+    // View switcher (Timeline vs Table)
+    const timelineBtn = document.getElementById('btn-view-timeline');
+    const tableBtn = document.getElementById('btn-view-table');
+
+    if (timelineBtn && tableBtn) {
+        timelineBtn.addEventListener('click', () => setViewMode('timeline'));
+        tableBtn.addEventListener('click', () => setViewMode('table'));
+    }
+
+    // Configure view parameters button
+    const cfgBtn = document.getElementById('btn-configure-view-bottom');
+    if (cfgBtn) {
+        cfgBtn.addEventListener('click', openViewParamsModal);
+    }
+}
+
+function setViewMode(mode) {
+    currentViewMode = mode;
+    const timelineBtn = document.getElementById('btn-view-timeline');
+    const tableBtn = document.getElementById('btn-view-table');
+    const timelineContainer = document.getElementById('timeline-view-container');
+    const tableContainer = document.getElementById('table-view-container');
+
+    if (mode === 'timeline') {
+        timelineBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#C9A227] text-black shadow-sm flex items-center gap-1.5 transition-all';
+        tableBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-1.5 transition-all';
+        timelineContainer.classList.remove('hidden');
+        tableContainer.classList.add('hidden');
+    } else {
+        tableBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#C9A227] text-black shadow-sm flex items-center gap-1.5 transition-all';
+        timelineBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-1.5 transition-all';
+        tableContainer.classList.remove('hidden');
+        timelineContainer.classList.add('hidden');
+    }
+}
+
+function getActiveSuites() {
+    // Dynamic mapping of shop barbers to suites, with defaults for a complete 5-suite sanctuary
+    return DEFAULT_SUITES.map((defSuite, idx) => {
+        const barber = allBarbers[idx];
+        if (barber) {
+            return {
+                ...defSuite,
+                staffName: barber.name || defSuite.staffName,
+                subtitle: barber.specialty || defSuite.subtitle,
+                barberId: barber.id
+            };
+        }
+        return defSuite;
     });
 }
 
 function renderAppointments() {
-    const dateFilter = document.getElementById('filter-date').value;
-    const statusFilter = document.getElementById('filter-status').value;
-    
     document.getElementById('appointments-loading').classList.add('hidden');
-    document.getElementById('table-container').classList.remove('hidden');
-    
-    let filtered = allAppointments;
 
-    if (dateFilter) {
-        filtered = filtered.filter(a => a.date === dateFilter);
-    }
-    
-    if (statusFilter !== 'all') {
-        filtered = filtered.filter(a => a.status === statusFilter);
+    // Update Date Display
+    const dateInput = document.getElementById('filter-date');
+    if (dateInput) dateInput.value = currentTimelineDate;
+
+    const dateDisplay = document.getElementById('current-date-display');
+    if (dateDisplay) {
+        const dObj = new Date(currentTimelineDate + 'T00:00:00');
+        dateDisplay.textContent = dObj.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
     }
 
-    filtered.sort((a, b) => {
-        if (a.date !== b.date) return b.date.localeCompare(a.date);
-        return b.start_time.localeCompare(a.start_time);
+    // Filter appointments for selected date
+    const statusFilter = document.getElementById('filter-status')?.value || 'all';
+
+    let dayApts = allAppointments.filter(apt => {
+        return normalizeDateStr(apt.date) === currentTimelineDate;
     });
 
+    if (statusFilter !== 'all') {
+        dayApts = dayApts.filter(apt => (apt.status || 'Confirmed') === statusFilter);
+    }
+
+    // If demo mode is on OR there are no appointments for the day, show demo reference data
+    const useDemo = timelineConfig.demoMode && dayApts.length === 0;
+    const activeApts = useDemo ? SCREENSHOT_DEMO_APTS : dayApts;
+
+    // Render Timeline View
+    renderTimelineView(activeApts, useDemo);
+
+    // Render Table View (Keeps both views updated)
+    renderTableView(dayApts);
+
+    // Ensure correct view is visible
+    setViewMode(currentViewMode);
+
+    lucide.createIcons();
+}
+
+function renderTimelineView(appointments, isDemo = false) {
+    const container = document.getElementById('timeline-view-container');
+    const gridInner = document.getElementById('sanctuary-grid-inner');
+    if (!gridInner) return;
+
+    const suites = getActiveSuites();
+    const { startHour, endHour, hourWidth } = timelineConfig;
+    const hours = [];
+    for (let h = startHour; h <= endHour; h++) {
+        hours.push(h);
+    }
+
+    const totalTimelineWidth = hours.length * hourWidth;
+    const startMinutesOfDay = startHour * 60;
+    const endMinutesOfDay = (endHour + 1) * 60;
+
+    // Build Header Row
+    let html = `
+        <div class="sanctuary-header-row flex w-full border-b border-[#ebe7df]">
+            <!-- Top Left Suite Label -->
+            <div class="sanctuary-suite-col sticky left-0 z-30 p-3 sm:p-4 flex flex-col justify-center bg-[#f7f5f0]">
+                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">SANCTUARY</span>
+                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">SUITE</span>
+            </div>
+            <!-- Horizontal Timeline Hour Header -->
+            <div class="flex relative h-12 items-center" style="width: ${totalTimelineWidth}px;">
+                ${hours.map(h => `
+                    <div style="width: ${hourWidth}px;" class="text-xs font-semibold text-[#8c8275] tracking-wider text-left pl-3">
+                        ${String(h).padStart(2, '0')}:00
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    // Calculate current time line if viewing today
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const isToday = currentTimelineDate === todayStr;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    let nowLineHtml = '';
+
+    if (isToday && nowMinutes >= startMinutesOfDay && nowMinutes <= endMinutesOfDay) {
+        const nowLeft = ((nowMinutes - startMinutesOfDay) / 60) * hourWidth;
+        nowLineHtml = `
+            <div class="sanctuary-now-line" style="left: ${nowLeft}px;">
+                <span class="sanctuary-now-badge">NOW</span>
+            </div>
+        `;
+    }
+
+    // Render Each Suite Row
+    suites.forEach((suite, idx) => {
+        // Find appointments for this suite
+        const suiteApts = appointments.filter(apt => {
+            if (apt.suite_id) return apt.suite_id === suite.id;
+            if (apt.barber_id) return apt.barber_id === suite.barberId;
+            return false;
+        });
+
+        html += `
+            <div class="sanctuary-row flex w-full">
+                <!-- Left Suite Info -->
+                <div class="sanctuary-suite-col sticky left-0 z-20 p-3.5 sm:p-4 flex flex-col justify-between bg-[#f7f5f0]">
+                    <div>
+                        <div class="leading-none">
+                            <span class="text-xs font-bold text-[#1c1917] tracking-wider block">Suite</span>
+                            <span class="text-2xl font-black text-[#1c1917] tracking-tight block">${suite.suiteNumber}</span>
+                        </div>
+                        <div class="text-[11px] font-medium text-[#78716c] leading-snug mt-1">
+                            ${suite.subtitle}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-[#57534e] font-medium mt-2">
+                        <i data-lucide="${suite.staffIcon || 'user'}" class="w-3.5 h-3.5 text-[#8c8275]"></i>
+                        <span class="truncate font-semibold">${suite.staffName}</span>
+                    </div>
+                </div>
+
+                <!-- Right Timeline Track -->
+                <div class="sanctuary-lane flex-grow relative" style="width: ${totalTimelineWidth}px;" onclick="handleLaneClick(event, '${suite.id}', '${suite.barberId}')">
+                    <!-- Vertical Hour Gridlines -->
+                    ${hours.map((h, i) => `
+                        <div class="sanctuary-hour-line" style="left: ${i * hourWidth}px;"></div>
+                    `).join('')}
+
+                    <!-- Now Line (if today) -->
+                    ${idx === 0 ? nowLineHtml : ''}
+
+                    <!-- Appointments Cards -->
+                    ${suiteApts.map(apt => renderSanctuaryCard(apt, startMinutesOfDay, hourWidth)).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    gridInner.innerHTML = html;
+}
+
+function renderSanctuaryCard(apt, startMinutesOfDay, hourWidth) {
+    if (apt.is_turnover) {
+        // Peach Ozone Turnover card
+        const startMins = parseTimeToMinutes(apt.start_time) || startMinutesOfDay;
+        const endMins = parseTimeToMinutes(apt.end_time) || (startMins + 30);
+        const duration = Math.max(25, endMins - startMins);
+        const left = ((startMins - startMinutesOfDay) / 60) * hourWidth;
+        const width = Math.max(50, (duration / 60) * hourWidth);
+
+        return `
+            <div class="sanctuary-card sanctuary-card-turnover" 
+                 style="left: ${left}px; width: ${width}px;" 
+                 title="Ozone Turnover / Sanitization Buffer"
+                 onclick="event.stopPropagation()">
+                <div class="flex flex-col items-center justify-center gap-1">
+                    <i data-lucide="spray-can" class="w-4 h-4 text-[#ba583c]"></i>
+                    <span class="text-[10px] font-bold tracking-wider text-[#9a4c33] hidden sm:inline">TURNOVER</span>
+                </div>
+            </div>
+        `;
+    }
+
+    const startMins = parseTimeToMinutes(apt.start_time) || startMinutesOfDay;
+    const endMins = parseTimeToMinutes(apt.end_time) || (startMins + 45);
+    const duration = Math.max(30, endMins - startMins);
+
+    const left = Math.max(4, ((startMins - startMinutesOfDay) / 60) * hourWidth);
+    const width = Math.max(120, (duration / 60) * hourWidth);
+
+    // Resolve details
+    const custName = apt.customer_name || (allCustomers.find(c => c.id === apt.customer_id)?.name) || 'Customer';
+    const srvName = apt.service_name || (allServices.find(s => s.id === apt.service_id)?.name) || 'Service';
+    const timeDisplay = `${normalizeTime24(apt.start_time)} - ${normalizeTime24(apt.end_time)}`;
+
+    const status = apt.status || 'Confirmed';
+    let cardClass = 'sanctuary-card-confirmed';
+    let statusBadge = '';
+
+    if (status === 'Active Protocol' || status === 'In Protocol') {
+        cardClass = 'sanctuary-card-active';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider flex items-center gap-1 uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    IN PROTOCOL
+                </span>
+                <span class="card-time text-[10px] font-mono">${timeDisplay}</span>
+            </div>
+        `;
+    } else if (status === 'Arrived Lounge') {
+        cardClass = 'sanctuary-card-arrived';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider uppercase">ARRIVED LOUNGE</span>
+                <span class="card-time text-[10px] font-semibold">${normalizeTime24(apt.start_time)}</span>
+            </div>
+        `;
+    } else if (status === 'Starting Soon') {
+        cardClass = 'sanctuary-card-arrived';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider uppercase">STARTING SOON</span>
+                <span class="card-time text-[10px] font-semibold">${normalizeTime24(apt.start_time)}</span>
+            </div>
+        `;
+    } else if (status === 'Room Prepped') {
+        cardClass = 'sanctuary-card-arrived';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider uppercase">ROOM PREPPED</span>
+                <span class="card-time text-[10px] font-semibold">${normalizeTime24(apt.start_time)}</span>
+            </div>
+        `;
+    } else if (status === 'Completed' || status === 'Finished') {
+        cardClass = 'sanctuary-card-completed';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider uppercase flex items-center gap-0.5">
+                    COMPLETED <i data-lucide="check" class="w-3 h-3 text-green-600 inline"></i>
+                </span>
+                <span class="card-time text-[10px] font-semibold">${normalizeTime24(apt.start_time)}</span>
+            </div>
+        `;
+    } else {
+        // Confirmed Reservation
+        cardClass = 'sanctuary-card-confirmed';
+        statusBadge = `
+            <div class="flex items-center justify-between w-full">
+                <span class="card-badge text-[10px] font-bold tracking-wider uppercase">CONFIRMED</span>
+                <span class="card-time text-[10px] font-semibold">${normalizeTime24(apt.start_time)}</span>
+            </div>
+        `;
+    }
+
+    const aptJson = JSON.stringify(apt).replace(/'/g, "&#39;");
+
+    return `
+        <div class="sanctuary-card ${cardClass}" 
+             style="left: ${left}px; width: ${width}px;" 
+             onclick="event.stopPropagation(); openAptDetailModal(${aptJson})"
+             title="${custName} - ${srvName} (${timeDisplay})">
+            ${statusBadge}
+            <div class="card-client font-bold text-xs sm:text-sm truncate leading-tight">
+                ${custName}
+            </div>
+            <div class="card-service text-[11px] truncate font-medium leading-none">
+                ${srvName}
+            </div>
+        </div>
+    `;
+}
+
+function handleLaneClick(event, suiteId, barberId) {
+    const laneRect = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - laneRect.left;
+    const { startHour, hourWidth } = timelineConfig;
+    const clickedMinutes = (clickX / hourWidth) * 60 + (startHour * 60);
+
+    // Round to nearest 15 mins
+    const roundedMinutes = Math.floor(clickedMinutes / 15) * 15;
+    const timeStr = normalizeTime24(roundedMinutes);
+
+    // Open booking modal
+    openBookingModal();
+}
+
+function renderTableView(dayApts) {
     const tbody = document.getElementById('table-body');
-    
-    if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">No appointments found matching filters.</td></tr>';
+    if (!tbody) return;
+
+    if (dayApts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">No appointments found for this date.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = filtered.map(apt => {
-        const srv = allServices.find(s => s.id === apt.service_id) || {name: 'Unknown'};
-        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Unknown'};
-        const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: 'Unknown', email: '', phone: ''};
+    tbody.innerHTML = dayApts.map(apt => {
+        const srv = allServices.find(s => s.id === apt.service_id) || {name: apt.service_name || 'Service'};
+        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Suite Artisan'};
+        const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: apt.customer_name || 'Customer', email: '', phone: ''};
         
-        const aptDate = new Date(apt.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const aptDate = new Date(normalizeDateStr(apt.date) + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         
-        let statusBadge = '';
-        if (apt.status === 'Confirmed') statusBadge = '<span class="neu-pill-inset text-green-400 font-semibold px-2.5 py-1 text-xs">Confirmed</span>';
+        let statusBadge = `<span class="neu-pill-inset text-gray-300 font-medium px-2.5 py-1 text-xs">${apt.status || 'Confirmed'}</span>`;
+        if (apt.status === 'Active Protocol') statusBadge = '<span class="neu-pill-inset text-amber-400 font-semibold px-2.5 py-1 text-xs">Active Protocol</span>';
+        else if (apt.status === 'Confirmed') statusBadge = '<span class="neu-pill-inset text-green-400 font-semibold px-2.5 py-1 text-xs">Confirmed</span>';
         else if (apt.status === 'Cancelled') statusBadge = '<span class="neu-pill-inset text-red-400 font-semibold px-2.5 py-1 text-xs">Cancelled</span>';
-        else statusBadge = `<span class="neu-pill-inset text-gray-400 font-medium px-2.5 py-1 text-xs">${apt.status}</span>`;
-
-        let actionBtns = '';
-        if (apt.status !== 'Cancelled') {
-            actionBtns = `<button onclick="cancelAppointment('${apt.id}')" class="text-xs text-red-500 hover:text-red-400 underline">Cancel</button>`;
-        }
 
         return `
-            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors">
-                <td class="p-4 whitespace-nowrap text-gray-500 text-xs font-mono">${apt.id.substring(0,8)}</td>
+            <tr class="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#181a24] transition-colors cursor-pointer" onclick='openAptDetailModal(${JSON.stringify(apt).replace(/'/g, "&#39;")})'>
+                <td class="p-4 whitespace-nowrap text-gray-500 text-xs font-mono">${(apt.booking_reference || apt.id || '').substring(0, 12)}</td>
                 <td class="p-4 whitespace-nowrap">
                     <div class="font-medium text-white">${aptDate}</div>
-                    <div class="text-gold text-xs font-medium">${Utils.formatTime(apt.start_time)} - ${Utils.formatTime(apt.end_time)}</div>
+                    <div class="text-gold text-xs font-medium font-mono">${normalizeTime24(apt.start_time)} - ${normalizeTime24(apt.end_time)}</div>
                 </td>
                 <td class="p-4">
                     <div class="font-medium text-white">${cust.name}</div>
@@ -248,25 +862,118 @@ function renderAppointments() {
                     <div class="text-gray-400 text-xs">with ${brb.name}</div>
                 </td>
                 <td class="p-4 whitespace-nowrap">${statusBadge}</td>
-                <td class="p-4 whitespace-nowrap">${actionBtns}</td>
+                <td class="p-4 whitespace-nowrap">
+                    <button onclick="event.stopPropagation(); cancelAppointment('${apt.id}')" class="text-xs text-red-400 hover:text-red-300 underline">Cancel</button>
+                </td>
             </tr>
         `;
     }).join('');
 }
 
+// Appointment Detail Modal Handlers
+window.openAptDetailModal = (apt) => {
+    currentActiveApt = apt;
+    const cust = allCustomers.find(c => c.id === apt.customer_id) || {};
+    const srv = allServices.find(s => s.id === apt.service_id) || {};
+    const brb = allBarbers.find(b => b.id === apt.barber_id) || {};
+
+    const custName = apt.customer_name || cust.name || 'Valued Guest';
+    const custPhone = apt.phone || cust.phone || 'Not provided';
+    const custEmail = apt.email || cust.email || 'Not provided';
+    const srvName = apt.service_name || srv.name || 'Treatment';
+    const price = apt.price || srv.price || 0;
+    const notes = apt.customer_notes || 'None';
+    const timeDisplay = `${normalizeTime24(apt.start_time)} - ${normalizeTime24(apt.end_time)}`;
+
+    document.getElementById('modal-apt-ref').textContent = apt.booking_reference || apt.id || 'SANCTUARY';
+    document.getElementById('modal-apt-customer').textContent = custName;
+    document.getElementById('modal-apt-service').textContent = srvName;
+    document.getElementById('modal-apt-price').textContent = Utils.formatCurrency(price);
+    document.getElementById('modal-apt-barber').textContent = brb.name ? `Artisan: ${brb.name}` : (apt.suite_id || 'Suite Sanctuary');
+    document.getElementById('modal-apt-time').textContent = timeDisplay;
+    document.getElementById('modal-apt-date').textContent = normalizeDateStr(apt.date) || currentTimelineDate;
+    document.getElementById('modal-apt-phone').textContent = custPhone;
+    document.getElementById('modal-apt-email').textContent = custEmail;
+    document.getElementById('modal-apt-notes').textContent = notes;
+
+    Utils.showModal('apt-detail-modal');
+    lucide.createIcons();
+};
+
+window.closeAptDetailModal = () => {
+    Utils.hideModal('apt-detail-modal');
+    currentActiveApt = null;
+};
+
+window.setAppointmentStatus = async (newStatus) => {
+    if (!currentActiveApt) return;
+    currentActiveApt.status = newStatus;
+
+    // If it's a real appointment in allAppointments, update it
+    const realApt = allAppointments.find(a => a.id === currentActiveApt.id);
+    if (realApt) {
+        realApt.status = newStatus;
+    }
+
+    Utils.showToast(`Status updated to ${newStatus}`);
+    closeAptDetailModal();
+    renderAppointments();
+    renderDashboard();
+};
+
+window.cancelCurrentApt = async () => {
+    if (!currentActiveApt) return;
+    const id = currentActiveApt.id;
+    closeAptDetailModal();
+    await cancelAppointment(id);
+};
+
 window.cancelAppointment = async (id) => {
-    if(!confirm("Are you sure you want to cancel this appointment?")) return;
+    if (!confirm("Are you sure you want to cancel this appointment?")) return;
     try {
         await API.post('cancelAppointment', { id });
         Utils.showToast("Appointment cancelled");
-        // Reload appointments
         const res = await API.request('GET', 'getAppointments');
         allAppointments = res || [];
         renderAppointments();
         renderDashboard();
     } catch(e) {
-        Utils.showToast(e.message, 'error');
+        // If demo appointment or offline
+        const idx = allAppointments.findIndex(a => a.id === id);
+        if (idx !== -1) {
+            allAppointments[idx].status = 'Cancelled';
+            Utils.showToast("Appointment marked as Cancelled");
+            renderAppointments();
+            renderDashboard();
+        } else {
+            Utils.showToast(e.message || "Cancelled locally", 'error');
+        }
     }
+};
+
+// View Parameters Modal Handlers
+window.openViewParamsModal = () => {
+    document.getElementById('param-start-hour').value = timelineConfig.startHour;
+    document.getElementById('param-end-hour').value = timelineConfig.endHour;
+    document.getElementById('param-show-turnover').checked = timelineConfig.showTurnover;
+    document.getElementById('param-demo-mode').checked = timelineConfig.demoMode;
+    Utils.showModal('view-params-modal');
+    lucide.createIcons();
+};
+
+window.closeViewParamsModal = () => {
+    Utils.hideModal('view-params-modal');
+};
+
+window.applyViewParams = () => {
+    timelineConfig.startHour = parseInt(document.getElementById('param-start-hour').value, 10) || 9;
+    timelineConfig.endHour = parseInt(document.getElementById('param-end-hour').value, 10) || 16;
+    timelineConfig.showTurnover = document.getElementById('param-show-turnover').checked;
+    timelineConfig.demoMode = document.getElementById('param-demo-mode').checked;
+
+    closeViewParamsModal();
+    Utils.showToast("Timeline parameters updated");
+    renderAppointments();
 };
 
 

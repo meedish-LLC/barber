@@ -13,10 +13,20 @@ const Utils = {
     },
 
     formatTime: (timeString) => {
-        // timeString is "HH:MM"
         if (!timeString) return '';
-        const [h, m] = timeString.split(':');
-        let hours = parseInt(h, 10);
+        let str = String(timeString).trim();
+        let h = 0, m = '00';
+        if (str.includes('T')) {
+            const timePart = str.split('T')[1].split('.')[0];
+            const parts = timePart.split(':');
+            h = parseInt(parts[0], 10);
+            m = (parts[1] || '00').substring(0, 2);
+        } else {
+            const parts = str.split(':');
+            h = parseInt(parts[0], 10);
+            m = (parts[1] || '00').substring(0, 2);
+        }
+        let hours = isNaN(h) ? 0 : h;
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12; 

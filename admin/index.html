@@ -103,49 +103,116 @@
         </section>
 
         <!-- APPOINTMENTS TAB -->
-        <section id="tab-appointments" class="tab-content flex-grow flex flex-col p-6 sm:p-8 overflow-hidden hidden">
-            <div class="neu-card p-5 mb-6 flex flex-col sm:flex-row gap-4 justify-between items-end">
-                <div class="flex gap-4 w-full sm:w-auto">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1 font-medium">Date Filter</label>
-                        <input type="date" id="filter-date" class="input-field py-2 text-sm w-full sm:w-auto">
+        <section id="tab-appointments" class="tab-content flex-grow flex flex-col p-4 sm:p-6 overflow-hidden hidden">
+            <!-- Top Controls Bar -->
+            <div class="neu-card p-4 mb-4 flex flex-col lg:flex-row gap-4 justify-between items-center">
+                <!-- Date Navigation -->
+                <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-between sm:justify-start">
+                    <div class="flex items-center gap-1.5">
+                        <button id="btn-date-prev" class="w-9 h-9 neu-circle flex items-center justify-center text-gray-300 hover:text-white" title="Previous Day">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <span id="current-date-display" class="font-semibold text-sm sm:text-base text-white px-2 tracking-wide min-w-[170px] text-center">Loading date...</span>
+                        <button id="btn-date-next" class="w-9 h-9 neu-circle flex items-center justify-center text-gray-300 hover:text-white" title="Next Day">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1 font-medium">Status</label>
-                        <select id="filter-status" class="input-field py-2 text-sm w-full sm:w-auto">
-                            <option value="all">All</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                    </div>
+                    <button id="btn-date-today" class="neu-pill-inset text-xs text-gold hover:text-white font-medium px-3 py-1.5 transition-colors">Today</button>
+                    <input type="date" id="filter-date" class="input-field py-1.5 px-3 text-xs w-auto bg-[#1a1d27] text-gray-200">
                 </div>
-                <div class="flex gap-3 w-full sm:w-auto justify-end">
-                    <button id="btn-clear-filters" class="btn-outline py-2.5 text-xs">Clear Filters</button>
-                    <button onclick="openBookingModal()" class="btn-primary py-2.5 text-xs flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add Appointment</button>
+
+                <!-- Right Controls: View Switcher, Filter & Action -->
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+                    <!-- View Mode Toggle -->
+                    <div class="neu-inset p-1 rounded-xl flex items-center">
+                        <button id="btn-view-timeline" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#C9A227] text-black shadow-sm flex items-center gap-1.5 transition-all">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i> <span>Timeline</span>
+                        </button>
+                        <button id="btn-view-table" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-1.5 transition-all">
+                            <i data-lucide="list" class="w-3.5 h-3.5"></i> <span>Table</span>
+                        </button>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <select id="filter-status" class="input-field py-1.5 px-3 text-xs w-auto bg-[#1a1d27]">
+                        <option value="all">All Statuses</option>
+                        <option value="Active Protocol">Active Protocol</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Arrived Lounge">Arrived Lounge</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+
+                    <button id="btn-clear-filters" class="btn-outline py-2 px-3 text-xs">Reset</button>
+                    <button onclick="openBookingModal()" class="btn-primary py-2 px-4 text-xs flex items-center font-semibold">
+                        <i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add Appointment
+                    </button>
                 </div>
             </div>
 
-            <div class="neu-card flex-grow flex flex-col overflow-hidden">
-                <div id="appointments-loading" class="flex-grow flex items-center justify-center text-gray-400">
-                    <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-gold"></i>
+            <!-- Main Content Area: Loading / Timeline / Table -->
+            <div class="flex-grow flex flex-col overflow-hidden relative">
+                <!-- Loading Spinner -->
+                <div id="appointments-loading" class="flex-grow flex items-center justify-center text-gray-400 neu-card">
+                    <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-gold mr-3"></i>
+                    <span>Loading schedule...</span>
                 </div>
-                
-                <div class="overflow-auto flex-grow hidden" id="table-container">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="sticky top-0 bg-[#12141a] z-10">
-                            <tr class="text-xs uppercase tracking-wider text-gray-400">
-                                <th class="p-4 font-medium">Ref</th>
-                                <th class="p-4 font-medium">Date & Time</th>
-                                <th class="p-4 font-medium">Customer</th>
-                                <th class="p-4 font-medium">Service & Barber</th>
-                                <th class="p-4 font-medium">Status</th>
-                                <th class="p-4 font-medium">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body" class="text-sm">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
+
+                <!-- TIMELINE VIEW (Sanctuary Suite Layout) -->
+                <div id="timeline-view-container" class="sanctuary-wrap flex-grow flex flex-col overflow-hidden hidden select-none">
+                    <!-- Scrollable Grid Container -->
+                    <div class="flex-grow overflow-auto relative" id="sanctuary-scroll-area">
+                        <div id="sanctuary-grid-inner" class="min-w-fit flex flex-col">
+                            <!-- Injected by JS: Header with times + Suite Rows -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom Legend & Controls (Matching image) -->
+                    <div class="p-4 sm:p-5 border-t border-[#ebe7df] bg-[#f7f5f0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-medium text-[#78716c]">
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#15161a] inline-block shadow-sm"></span>
+                                <span class="text-[#292524] font-medium">Active Protocol</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#ebe7e0] border border-[#dcd5c9] inline-block"></span>
+                                <span class="text-[#292524] font-medium">Confirmed Reservation</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#fceae1] border border-[#f6d2c2] inline-block"></span>
+                                <span class="text-[#292524] font-medium">Ozone Turnover</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#f1efea] border border-[#e1ded6] inline-block"></span>
+                                <span class="text-[#292524] font-medium">Finished</span>
+                            </span>
+                        </div>
+                        <button id="btn-configure-view-bottom" class="flex items-center gap-2 text-xs font-bold text-[#57534e] hover:text-[#1c1917] uppercase tracking-wider transition-colors cursor-pointer">
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                            <span>CONFIGURE VIEW PARAMETERS</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABLE VIEW (Alternative list view) -->
+                <div id="table-view-container" class="neu-card flex-grow flex flex-col overflow-hidden hidden">
+                    <div class="overflow-auto flex-grow" id="table-container">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="sticky top-0 bg-[#12141a] z-10 border-b border-[rgba(255,255,255,0.06)]">
+                                <tr class="text-xs uppercase tracking-wider text-gray-400">
+                                    <th class="p-4 font-medium">Ref</th>
+                                    <th class="p-4 font-medium">Date & Time</th>
+                                    <th class="p-4 font-medium">Customer</th>
+                                    <th class="p-4 font-medium">Service & Barber</th>
+                                    <th class="p-4 font-medium">Status</th>
+                                    <th class="p-4 font-medium">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="text-sm">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -357,6 +424,158 @@
                     <button type="submit" class="btn-primary">Save Service</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Appointment Detail Modal -->
+    <div id="apt-detail-modal" class="modal-overlay fixed inset-0 z-50 flex justify-center items-center">
+        <div class="modal-content w-full max-w-lg p-6 relative">
+            <div class="flex justify-between items-start border-b border-[rgba(255,255,255,0.06)] pb-4 mb-5">
+                <div>
+                    <span id="modal-apt-ref" class="neu-pill-inset text-[11px] font-mono text-gold px-2.5 py-1">BS-XXXXX</span>
+                    <h3 class="playfair text-xl font-bold text-white mt-2" id="modal-apt-customer">Customer Name</h3>
+                </div>
+                <button onclick="closeAptDetailModal()" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Details Body -->
+            <div class="space-y-4 text-sm text-gray-300">
+                <div class="grid grid-cols-2 gap-4 bg-[#111319] p-3.5 rounded-xl border border-[rgba(255,255,255,0.04)]">
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Service</span>
+                        <span class="font-semibold text-white mt-0.5 block" id="modal-apt-service">24K Sculpting</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Price</span>
+                        <span class="font-semibold text-gold mt-0.5 block" id="modal-apt-price">$0.00</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Suite & Artisan</span>
+                        <span class="font-medium text-gray-200 mt-0.5 block" id="modal-apt-barber">Suite 01 · Hélène Vance</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider block font-medium">Time Window</span>
+                        <span class="font-medium text-amber-300 mt-0.5 block font-mono" id="modal-apt-time">09:30 - 10:45</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between py-1 border-b border-[rgba(255,255,255,0.04)]">
+                        <span class="text-xs text-gray-400">Date</span>
+                        <span class="text-xs font-medium text-white" id="modal-apt-date">Oct 17, 2026</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-[rgba(255,255,255,0.04)]">
+                        <span class="text-xs text-gray-400">Phone</span>
+                        <span class="text-xs font-medium text-white" id="modal-apt-phone">--</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-[rgba(255,255,255,0.04)]">
+                        <span class="text-xs text-gray-400">Email</span>
+                        <span class="text-xs font-medium text-white" id="modal-apt-email">--</span>
+                    </div>
+                    <div id="modal-apt-notes-container" class="py-1">
+                        <span class="text-xs text-gray-400 block mb-1">Notes / Preferences</span>
+                        <p class="text-xs text-gray-300 italic bg-[#111319] p-2.5 rounded-lg border border-[rgba(255,255,255,0.04)]" id="modal-apt-notes">None</p>
+                    </div>
+                </div>
+
+                <!-- Status Selector -->
+                <div class="pt-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Update Status</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="modal-status-buttons">
+                        <button onclick="setAppointmentStatus('Active Protocol')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#15161a] border border-amber-600/50 text-amber-400 hover:bg-[#202228] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Active Protocol
+                        </button>
+                        <button onclick="setAppointmentStatus('Confirmed')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-stone-300"></span> Confirmed
+                        </button>
+                        <button onclick="setAppointmentStatus('Arrived Lounge')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-200"></span> Arrived Lounge
+                        </button>
+                        <button onclick="setAppointmentStatus('Starting Soon')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-yellow-400"></span> Starting Soon
+                        </button>
+                        <button onclick="setAppointmentStatus('Completed')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-gray-200 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-green-400"></span> Completed
+                        </button>
+                        <button onclick="setAppointmentStatus('Cancelled')" class="py-2 px-2.5 rounded-lg text-xs font-semibold bg-[#2a2d39] text-red-400 hover:bg-[#323644] transition-colors flex items-center justify-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-400"></span> Cancelled
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center gap-3 mt-6 pt-5 border-t border-[rgba(255,255,255,0.06)]">
+                <button type="button" id="modal-apt-cancel-btn" onclick="cancelCurrentApt()" class="text-xs text-red-400 hover:text-red-300 underline font-medium">Cancel Appointment</button>
+                <button type="button" class="btn-outline text-xs py-2 px-5" onclick="closeAptDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configure View Parameters Modal -->
+    <div id="view-params-modal" class="modal-overlay fixed inset-0 z-50 flex justify-center items-center">
+        <div class="modal-content w-full max-w-md p-6 relative">
+            <div class="flex justify-between items-center border-b border-[rgba(255,255,255,0.06)] pb-4 mb-5">
+                <h3 class="playfair text-xl font-bold text-gold flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-gold"></i>
+                    Timeline Parameters
+                </h3>
+                <button onclick="closeViewParamsModal()" class="w-8 h-8 neu-circle flex items-center justify-center text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Timeline Hours</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <span class="text-xs text-gray-400 block mb-1">Start Hour</span>
+                            <select id="param-start-hour" class="input-field py-2 text-sm">
+                                <option value="8">08:00 AM</option>
+                                <option value="9" selected>09:00 AM</option>
+                                <option value="10">10:00 AM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-400 block mb-1">End Hour</span>
+                            <select id="param-end-hour" class="input-field py-2 text-sm">
+                                <option value="15">03:00 PM (15:00)</option>
+                                <option value="16">04:00 PM (16:00)</option>
+                                <option value="17">05:00 PM (17:00)</option>
+                                <option value="18" selected>06:00 PM (18:00)</option>
+                                <option value="20">08:00 PM (20:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-[#111319] border border-[rgba(255,255,255,0.04)]">
+                        <input type="checkbox" id="param-show-turnover" checked class="w-4 h-4 rounded text-gold focus:ring-gold bg-[#1a1d27] border-gray-700">
+                        <div>
+                            <span class="font-medium text-white text-xs block">Show Ozone Turnover Blocks</span>
+                            <span class="text-[11px] text-gray-400 block">Render peach buffer turnover cards between/after sessions</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-[#111319] border border-[rgba(255,255,255,0.04)]">
+                        <input type="checkbox" id="param-demo-mode" class="w-4 h-4 rounded text-gold focus:ring-gold bg-[#1a1d27] border-gray-700">
+                        <div>
+                            <span class="font-medium text-white text-xs block">Screenshot Reference Mode</span>
+                            <span class="text-[11px] text-gray-400 block">Show sample Sanctuary bookings from reference photo</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-[rgba(255,255,255,0.06)]">
+                <button type="button" class="btn-outline text-xs py-2 px-4" onclick="closeViewParamsModal()">Cancel</button>
+                <button type="button" class="btn-primary text-xs py-2 px-5" onclick="applyViewParams()">Apply Parameters</button>
+            </div>
         </div>
     </div>
 

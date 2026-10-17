@@ -398,3 +398,195 @@ tbody tr:hover {
     color: black !important;
   }
 }
+
+/* =========================================================
+   SANCTUARY SUITE TIMELINE DESIGN SYSTEM
+   ========================================================= */
+.sanctuary-wrap {
+  background-color: #f7f5f0;
+  color: #1c1917;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sanctuary-header-row {
+  background-color: #f7f5f0;
+  border-bottom: 1px solid #ebe7df;
+}
+
+.sanctuary-suite-col {
+  width: 175px;
+  min-width: 175px;
+  max-width: 175px;
+  background-color: #f7f5f0;
+  border-right: 1px solid #ebe7df;
+}
+
+.sanctuary-row {
+  border-bottom: 1px solid #ebe7df;
+  min-height: 116px;
+  background-color: #f7f5f0;
+  transition: background-color 0.15s ease;
+}
+
+.sanctuary-row:hover {
+  background-color: #f4f0e8;
+}
+
+.sanctuary-row:hover .sanctuary-suite-col {
+  background-color: #f4f0e8;
+}
+
+.sanctuary-lane {
+  position: relative;
+  min-height: 116px;
+  background-color: transparent;
+}
+
+/* Vertical Hour Divider */
+.sanctuary-hour-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #ebe7df;
+  pointer-events: none;
+}
+
+/* Appointment Cards */
+.sanctuary-card {
+  position: absolute;
+  top: 14px;
+  height: 86px;
+  border-radius: 12px;
+  padding: 8px 11px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  user-select: none;
+  z-index: 10;
+}
+
+.sanctuary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  z-index: 20;
+}
+
+/* Card Style: Active Protocol (Black Luxe) */
+.sanctuary-card-active {
+  background: #15161a;
+  border: 1px solid #2e2c26;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+}
+.sanctuary-card-active .card-badge {
+  color: #f59e0b;
+}
+.sanctuary-card-active .card-time {
+  color: #9ca3af;
+}
+.sanctuary-card-active .card-client {
+  color: #ffffff;
+}
+.sanctuary-card-active .card-service {
+  color: #d1b88e;
+}
+
+/* Card Style: Confirmed (Warm Cream) */
+.sanctuary-card-confirmed {
+  background: #ece8e1;
+  border: 1px solid #ded8cc;
+  color: #1c1917;
+}
+.sanctuary-card-confirmed .card-badge {
+  color: #78716c;
+}
+.sanctuary-card-confirmed .card-time {
+  color: #78716c;
+}
+.sanctuary-card-confirmed .card-client {
+  color: #1c1917;
+}
+.sanctuary-card-confirmed .card-service {
+  color: #57534e;
+}
+
+/* Card Style: Arrived Lounge / Starting Soon / Room Prepped (Warm Sand) */
+.sanctuary-card-arrived {
+  background: #eae6dd;
+  border: 1px solid #dcd5c9;
+  color: #1c1917;
+}
+.sanctuary-card-arrived .card-badge {
+  color: #6b6255;
+}
+.sanctuary-card-arrived .card-time {
+  color: #6b6255;
+}
+.sanctuary-card-arrived .card-client {
+  color: #1c1917;
+}
+.sanctuary-card-arrived .card-service {
+  color: #57534e;
+}
+
+/* Card Style: Completed / Finished (Soft Gray) */
+.sanctuary-card-completed {
+  background: #f1efea;
+  border: 1px solid #e1ded6;
+  color: #44403c;
+}
+.sanctuary-card-completed .card-badge {
+  color: #78716c;
+}
+.sanctuary-card-completed .card-time {
+  color: #78716c;
+}
+.sanctuary-card-completed .card-client {
+  color: #44403c;
+}
+.sanctuary-card-completed .card-service {
+  color: #78716c;
+}
+
+/* Card Style: Ozone Turnover / Cleaning Block (Soft Peach) */
+.sanctuary-card-turnover {
+  background: #fceae1;
+  border: 1px solid #f6d2c2;
+  color: #9a4c33;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+/* Current Time Red Line Indicator */
+.sanctuary-now-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #ef4444;
+  z-index: 25;
+  pointer-events: none;
+}
+.sanctuary-now-badge {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ef4444;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
