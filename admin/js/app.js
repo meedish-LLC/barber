@@ -187,234 +187,218 @@ let timelineConfig = {
     demoMode: true // default to showing the screenshot's sample view if day has no appointments
 };
 
-const DEFAULT_SUITES = [
+const DEFAULT_BARBERS = [
     {
-        id: 'suite_1',
-        suiteNumber: '01',
-        subtitle: 'Sculptural & Botanical',
-        staffName: 'Hélène Vance',
-        staffIcon: 'clock',
-        barberId: 'barber_1'
+        id: 'barber_1',
+        barberNumber: '01',
+        name: 'John Carter',
+        specialty: 'Classic cuts • Fades',
+        icon: 'scissors'
     },
     {
-        id: 'suite_2',
-        suiteNumber: '02',
-        subtitle: 'Thermal Hydrotherapy',
-        staffName: 'Julian Thorne',
-        staffIcon: 'user',
-        barberId: 'barber_2'
+        id: 'barber_2',
+        barberNumber: '02',
+        name: 'Michael Davis',
+        specialty: 'Modern styling',
+        icon: 'scissors'
     },
     {
-        id: 'suite_3',
-        suiteNumber: '03',
-        subtitle: 'Cryogenic Cellular',
-        staffName: 'Camille Roux',
-        staffIcon: 'snowflake',
-        barberId: 'barber_3'
+        id: 'barber_3',
+        barberNumber: '03',
+        name: 'David Wilson',
+        specialty: 'Fades • Hot Towel',
+        icon: 'scissors'
     },
     {
-        id: 'suite_4',
-        suiteNumber: '04',
-        subtitle: 'Nail & Hand Atelier',
-        staffName: 'Sora Kim',
-        staffIcon: 'pen-tool',
-        barberId: 'barber_4'
+        id: 'barber_4',
+        barberNumber: '04',
+        name: 'Marcus Sterling',
+        specialty: 'Beard Sculpting & Trim',
+        icon: 'scissors'
     },
     {
-        id: 'suite_5',
-        suiteNumber: '05',
-        subtitle: 'Aromatherapy Cocoon',
-        staffName: 'Rotating Artisan',
-        staffIcon: 'bed',
-        barberId: 'barber_5'
+        id: 'barber_5',
+        barberNumber: '05',
+        name: 'Julian Thorne',
+        specialty: 'Scalp & Hair Treatment',
+        icon: 'scissors'
     }
 ];
 
-// Screenshot Reference Appointments matching the user's reference image
+// Reference Demo Appointments for Barber chairs
 const SCREENSHOT_DEMO_APTS = [
     {
         id: 'demo_1',
-        booking_reference: 'SAN-9382-CL',
-        suite_id: 'suite_1',
+        booking_reference: 'BS-9382-CL',
         barber_id: 'barber_1',
         customer_name: 'Claire D. · Tl...',
         phone: '+1 (555) 234-5678',
-        email: 'claire.d@sanctuary.com',
-        service_name: '24K Sculpting...',
+        email: 'claire.d@example.com',
+        service_name: 'Classic Fade & Beard',
         service_id: 'srv_1',
-        price: 185,
+        price: 45,
         status: 'Active Protocol',
         start_time: '09:30',
         end_time: '10:45',
-        customer_notes: 'Prefers quiet session with botanical oils.'
+        customer_notes: 'Prefers classic razor finish.'
     },
     {
         id: 'demo_2',
-        booking_reference: 'SAN-4819-EL',
-        suite_id: 'suite_1',
+        booking_reference: 'BS-4819-EL',
         barber_id: 'barber_1',
         customer_name: 'Eleanor Van...',
         phone: '+1 (555) 345-6789',
-        email: 'eleanor.v@sanctuary.com',
-        service_name: 'Botanical Archi...',
+        email: 'eleanor.v@example.com',
+        service_name: 'Precision Scissor Cut',
         service_id: 'srv_2',
-        price: 140,
+        price: 35,
         status: 'Arrived Lounge',
         start_time: '11:15',
-        end_time: '12:15',
-        customer_notes: 'Arrival notified at reception lounge.'
+        end_time: '12:00',
+        customer_notes: 'Waiting in lounge.'
     },
     {
         id: 'demo_3',
-        booking_reference: 'SAN-1102-GE',
-        suite_id: 'suite_1',
+        booking_reference: 'BS-1102-GE',
         barber_id: 'barber_1',
         customer_name: 'Genevieve ...',
         phone: '+1 (555) 456-7890',
-        email: 'genevieve@sanctuary.com',
-        service_name: 'Cellular Sculp...',
+        email: 'genevieve@example.com',
+        service_name: 'Executive Grooming',
         service_id: 'srv_3',
-        price: 165,
+        price: 55,
         status: 'Confirmed',
         start_time: '14:00',
-        end_time: '15:00',
-        customer_notes: 'Confirmed via VIP portal.'
+        end_time: '14:45',
+        customer_notes: 'Confirmed appointment.'
     },
     {
         id: 'demo_4',
-        booking_reference: 'SAN-6201-MA',
-        suite_id: 'suite_2',
+        booking_reference: 'BS-6201-MA',
         barber_id: 'barber_2',
         customer_name: 'Marcus Sterli...',
         phone: '+1 (555) 567-8901',
-        email: 'marcus.s@sanctuary.com',
-        service_name: 'Thermal Scalp & ...',
+        email: 'marcus.s@example.com',
+        service_name: 'Modern Styling & Beard',
         service_id: 'srv_4',
-        price: 155,
+        price: 50,
         status: 'Active Protocol',
         start_time: '10:00',
-        end_time: '11:30',
-        customer_notes: 'Thermal scalp hydrotherapy with cooling tonic.'
+        end_time: '11:15',
+        customer_notes: 'Hot lather and razor lining.'
     },
     {
         id: 'demo_5',
-        booking_reference: 'SAN-7740-AR',
-        suite_id: 'suite_2',
+        booking_reference: 'BS-7740-AR',
         barber_id: 'barber_2',
         customer_name: 'Aria Mo...',
         phone: '+1 (555) 678-9012',
-        email: 'aria.m@sanctuary.com',
-        service_name: 'Oribe Alch..',
+        email: 'aria.m@example.com',
+        service_name: 'Hot Towel Shave',
         service_id: 'srv_2',
-        price: 120,
+        price: 30,
         status: 'Confirmed',
         start_time: '12:00',
-        end_time: '13:00',
+        end_time: '12:45',
         customer_notes: ''
     },
     {
         id: 'demo_turnover_2',
         is_turnover: true,
-        suite_id: 'suite_2',
-        start_time: '13:10',
-        end_time: '13:40',
-        label: 'Ozone Turnover'
+        barber_id: 'barber_2',
+        start_time: '13:00',
+        end_time: '13:30',
+        label: 'Station Turnover'
     },
     {
         id: 'demo_6',
-        booking_reference: 'SAN-3392-SO',
-        suite_id: 'suite_3',
+        booking_reference: 'BS-3392-SO',
         barber_id: 'barber_3',
         customer_name: 'Sophia Chen',
         phone: '+1 (555) 789-0123',
-        email: 'sophia.c@sanctuary.com',
-        service_name: 'Cryo Cellular Co...',
+        email: 'sophia.c@example.com',
+        service_name: 'Fades & Hot Towel',
         service_id: 'srv_3',
-        price: 195,
+        price: 45,
         status: 'Active Protocol',
         start_time: '10:15',
-        end_time: '11:45',
-        customer_notes: 'Cryotherapy facial cellular protocol.'
+        end_time: '11:30',
+        customer_notes: 'Low skin fade.'
     },
     {
         id: 'demo_7',
-        booking_reference: 'SAN-9904-VI',
-        suite_id: 'suite_3',
+        booking_reference: 'BS-9904-VI',
         barber_id: 'barber_3',
         customer_name: 'Victoria Be...',
         phone: '+1 (555) 890-1234',
-        email: 'victoria.b@sanctuary.com',
-        service_name: '24K Gold Lift',
+        email: 'victoria.b@example.com',
+        service_name: 'Beard Sculpting',
         service_id: 'srv_1',
-        price: 175,
+        price: 35,
         status: 'Confirmed',
         start_time: '12:30',
-        end_time: '13:30',
+        end_time: '13:15',
         customer_notes: ''
     },
     {
         id: 'demo_8',
-        booking_reference: 'SAN-2041-LI',
-        suite_id: 'suite_4',
+        booking_reference: 'BS-2041-LI',
         barber_id: 'barber_4',
         customer_name: 'Lillian R...',
         phone: '+1 (555) 901-2345',
-        email: 'lillian.r@sanctuary.com',
-        service_name: 'Japanese ...',
+        email: 'lillian.r@example.com',
+        service_name: 'Classic Haircut',
         service_id: 'srv_5',
-        price: 95,
+        price: 30,
         status: 'Completed',
-        start_time: '09:15',
-        end_time: '10:15',
-        customer_notes: 'Signature manicure atelier.'
+        start_time: '09:00',
+        end_time: '09:45',
+        customer_notes: ''
     },
     {
         id: 'demo_9',
-        booking_reference: 'SAN-5812-CH',
-        suite_id: 'suite_4',
+        booking_reference: 'BS-5812-CH',
         barber_id: 'barber_4',
         customer_name: 'Charlotte Du...',
         phone: '+1 (555) 012-3456',
-        email: 'charlotte.d@sanctuary.com',
-        service_name: 'Micro-Blade & Br...',
+        email: 'charlotte.d@example.com',
+        service_name: 'Beard Trim & Shape',
         service_id: 'srv_5',
-        price: 135,
+        price: 25,
         status: 'Starting Soon',
         start_time: '11:00',
-        end_time: '12:00',
+        end_time: '11:45',
         customer_notes: ''
     },
     {
         id: 'demo_10',
-        booking_reference: 'SAN-4401-IS',
-        suite_id: 'suite_4',
+        booking_reference: 'BS-4401-IS',
         barber_id: 'barber_4',
         customer_name: 'Isabelle...',
         phone: '+1 (555) 123-7890',
-        email: 'isabelle@sanctuary.com',
-        service_name: 'Non-Toxi...',
+        email: 'isabelle@example.com',
+        service_name: 'Haircut & Wash',
         service_id: 'srv_5',
-        price: 110,
+        price: 35,
         status: 'Confirmed',
         start_time: '13:00',
-        end_time: '14:00',
+        end_time: '13:45',
         customer_notes: ''
     },
     {
         id: 'demo_11',
-        booking_reference: 'SAN-8012-VI',
-        suite_id: 'suite_5',
+        booking_reference: 'BS-8012-VI',
         barber_id: 'barber_5',
         customer_name: 'VIP Member S...',
         phone: '+1 (555) 999-8877',
-        email: 'vip.member@sanctuary.com',
-        service_name: 'Signature Sound ...',
+        email: 'vip.member@example.com',
+        service_name: 'Signature Grooming',
         service_id: 'srv_1',
-        price: 220,
+        price: 65,
         status: 'Room Prepped',
         start_time: '10:45',
-        end_time: '11:45',
-        customer_notes: 'Private suite sound bath preparation.'
+        end_time: '11:30',
+        customer_notes: 'Private chair appointment.'
     }
 ];
 
@@ -540,20 +524,17 @@ function setViewMode(mode) {
     }
 }
 
-function getActiveSuites() {
-    // Dynamic mapping of shop barbers to suites, with defaults for a complete 5-suite sanctuary
-    return DEFAULT_SUITES.map((defSuite, idx) => {
-        const barber = allBarbers[idx];
-        if (barber) {
-            return {
-                ...defSuite,
-                staffName: barber.name || defSuite.staffName,
-                subtitle: barber.specialty || defSuite.subtitle,
-                barberId: barber.id
-            };
-        }
-        return defSuite;
-    });
+function getActiveBarbers() {
+    if (allBarbers && allBarbers.length > 0) {
+        return allBarbers.map((barber, idx) => ({
+            id: barber.id,
+            barberNumber: String(idx + 1).padStart(2, '0'),
+            name: barber.name,
+            specialty: barber.specialty || 'Master Barber',
+            icon: 'scissors'
+        }));
+    }
+    return DEFAULT_BARBERS;
 }
 
 function renderAppointments() {
@@ -605,7 +586,7 @@ function renderTimelineView(appointments, isDemo = false) {
     const gridInner = document.getElementById('sanctuary-grid-inner');
     if (!gridInner) return;
 
-    const suites = getActiveSuites();
+    const barbers = getActiveBarbers();
     const { startHour, endHour, hourWidth } = timelineConfig;
     const hours = [];
     for (let h = startHour; h <= endHour; h++) {
@@ -619,10 +600,10 @@ function renderTimelineView(appointments, isDemo = false) {
     // Build Header Row
     let html = `
         <div class="sanctuary-header-row flex w-full border-b border-[#ebe7df]">
-            <!-- Top Left Suite Label -->
+            <!-- Top Left Barber Label -->
             <div class="sanctuary-suite-col sticky left-0 z-30 p-3 sm:p-4 flex flex-col justify-center bg-[#f7f5f0]">
-                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">SANCTUARY</span>
-                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">SUITE</span>
+                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">BARBERSHOP</span>
+                <span class="text-[11px] font-bold tracking-[0.16em] text-[#4a453e] uppercase leading-tight">BARBERS</span>
             </div>
             <!-- Horizontal Timeline Hour Header -->
             <div class="flex relative h-12 items-center" style="width: ${totalTimelineWidth}px;">
@@ -651,36 +632,34 @@ function renderTimelineView(appointments, isDemo = false) {
         `;
     }
 
-    // Render Each Suite Row
-    suites.forEach((suite, idx) => {
-        // Find appointments for this suite
-        const suiteApts = appointments.filter(apt => {
-            if (apt.suite_id) return apt.suite_id === suite.id;
-            if (apt.barber_id) return apt.barber_id === suite.barberId;
-            return false;
+    // Render Each Barber Row
+    barbers.forEach((barber, idx) => {
+        // Find appointments for this barber
+        const barberApts = appointments.filter(apt => {
+            return String(apt.barber_id) === String(barber.id);
         });
 
         html += `
             <div class="sanctuary-row flex w-full">
-                <!-- Left Suite Info -->
+                <!-- Left Barber Info -->
                 <div class="sanctuary-suite-col sticky left-0 z-20 p-3.5 sm:p-4 flex flex-col justify-between bg-[#f7f5f0]">
                     <div>
                         <div class="leading-none">
-                            <span class="text-xs font-bold text-[#1c1917] tracking-wider block">Suite</span>
-                            <span class="text-2xl font-black text-[#1c1917] tracking-tight block">${suite.suiteNumber}</span>
+                            <span class="text-xs font-bold text-[#1c1917] tracking-wider block">Barber</span>
+                            <span class="text-2xl font-black text-[#1c1917] tracking-tight block">${barber.barberNumber}</span>
                         </div>
-                        <div class="text-[11px] font-medium text-[#78716c] leading-snug mt-1">
-                            ${suite.subtitle}
+                        <div class="text-[11px] font-medium text-[#78716c] leading-snug mt-1 line-clamp-2">
+                            ${barber.specialty}
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5 text-xs text-[#57534e] font-medium mt-2">
-                        <i data-lucide="${suite.staffIcon || 'user'}" class="w-3.5 h-3.5 text-[#8c8275]"></i>
-                        <span class="truncate font-semibold">${suite.staffName}</span>
+                        <i data-lucide="${barber.icon || 'scissors'}" class="w-3.5 h-3.5 text-[#8c8275]"></i>
+                        <span class="truncate font-semibold">${barber.name}</span>
                     </div>
                 </div>
 
                 <!-- Right Timeline Track -->
-                <div class="sanctuary-lane flex-grow relative" style="width: ${totalTimelineWidth}px;" onclick="handleLaneClick(event, '${suite.id}', '${suite.barberId}')">
+                <div class="sanctuary-lane flex-grow relative" style="width: ${totalTimelineWidth}px;" onclick="handleLaneClick(event, '${barber.id}')">
                     <!-- Vertical Hour Gridlines -->
                     ${hours.map((h, i) => `
                         <div class="sanctuary-hour-line" style="left: ${i * hourWidth}px;"></div>
@@ -690,7 +669,7 @@ function renderTimelineView(appointments, isDemo = false) {
                     ${idx === 0 ? nowLineHtml : ''}
 
                     <!-- Appointments Cards -->
-                    ${suiteApts.map(apt => renderSanctuaryCard(apt, startMinutesOfDay, hourWidth)).join('')}
+                    ${barberApts.map(apt => renderSanctuaryCard(apt, startMinutesOfDay, hourWidth)).join('')}
                 </div>
             </div>
         `;
@@ -811,15 +790,11 @@ function renderSanctuaryCard(apt, startMinutesOfDay, hourWidth) {
     `;
 }
 
-function handleLaneClick(event, suiteId, barberId) {
+function handleLaneClick(event, barberId) {
     const laneRect = event.currentTarget.getBoundingClientRect();
     const clickX = event.clientX - laneRect.left;
     const { startHour, hourWidth } = timelineConfig;
     const clickedMinutes = (clickX / hourWidth) * 60 + (startHour * 60);
-
-    // Round to nearest 15 mins
-    const roundedMinutes = Math.floor(clickedMinutes / 15) * 15;
-    const timeStr = normalizeTime24(roundedMinutes);
 
     // Open booking modal
     openBookingModal();
@@ -836,7 +811,7 @@ function renderTableView(dayApts) {
 
     tbody.innerHTML = dayApts.map(apt => {
         const srv = allServices.find(s => s.id === apt.service_id) || {name: apt.service_name || 'Service'};
-        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Suite Artisan'};
+        const brb = allBarbers.find(b => b.id === apt.barber_id) || {name: 'Barber'};
         const cust = allCustomers.find(c => c.id === apt.customer_id) || {name: apt.customer_name || 'Customer', email: '', phone: ''};
         
         const aptDate = new Date(normalizeDateStr(apt.date) + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -885,11 +860,11 @@ window.openAptDetailModal = (apt) => {
     const notes = apt.customer_notes || 'None';
     const timeDisplay = `${normalizeTime24(apt.start_time)} - ${normalizeTime24(apt.end_time)}`;
 
-    document.getElementById('modal-apt-ref').textContent = apt.booking_reference || apt.id || 'SANCTUARY';
+    document.getElementById('modal-apt-ref').textContent = apt.booking_reference || apt.id || 'BARBER';
     document.getElementById('modal-apt-customer').textContent = custName;
     document.getElementById('modal-apt-service').textContent = srvName;
     document.getElementById('modal-apt-price').textContent = Utils.formatCurrency(price);
-    document.getElementById('modal-apt-barber').textContent = brb.name ? `Artisan: ${brb.name}` : (apt.suite_id || 'Suite Sanctuary');
+    document.getElementById('modal-apt-barber').textContent = brb.name || apt.barber_name || 'Barber';
     document.getElementById('modal-apt-time').textContent = timeDisplay;
     document.getElementById('modal-apt-date').textContent = normalizeDateStr(apt.date) || currentTimelineDate;
     document.getElementById('modal-apt-phone').textContent = custPhone;
